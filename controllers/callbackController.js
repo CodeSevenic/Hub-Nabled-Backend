@@ -1,6 +1,6 @@
 ﻿const axios = require('axios');
 const { doc, setDoc } = require('firebase/firestore');
-const { firestore } = require('./firebase');
+const { firestore } = require('../firebase-db/firebase');
 
 exports.handleCallback = async (req, res) => {
   const code = req.query.code;
