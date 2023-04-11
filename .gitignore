@@ -1,2 +1,23 @@
-﻿/node_modules
+﻿# Ignore compiled files
+*.o
+*.a
+*.so
+
+# Ignore executables
+*.exe
+*.out
+*.app
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*.log
+*.tmp
+*.swp
+
+# Ignore project-specific files
+node_modules/
+dist/
 .env
