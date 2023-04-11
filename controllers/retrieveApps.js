@@ -1,6 +1,6 @@
 ﻿const axios = require('axios');
 const { doc, getDoc } = require('firebase/firestore');
-const { firestore } = require('./firebase');
+const { firestore } = require('../firebase-db/firebase');
 
 exports.retrieveApps = async (req, res) => {
   const userId = req.query.user_id; // Assuming user_id is passed as a query parameter
