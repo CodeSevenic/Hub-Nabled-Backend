@@ -1,40 +1,37 @@
-﻿const request = require('request');
+﻿const axios = require('axios');
+const { doc, setDoc } = require('firebase/firestore');
+const { firestore } = require('./firebase');
 
-exports.handleCallback = (req, res) => {
+exports.handleCallback = async (req, res) => {
   const code = req.query.code;
+  const userId = req.query.user_id;
 
   const options = {
+    method: 'post',
     url: 'https://api.hubapi.com/oauth/v1/token',
-    method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
     },
-    form: {
-      grant_type: 'authorization_code',
-      client_id: process.env.HUBSPOT_CLIENT_ID,
-      client_secret: process.env.HUBSPOT_CLIENT_SECRET,
-      redirect_uri: process.env.HUBSPOT_REDIRECT_URI,
-      code: code,
-    },
+    data: `grant_type=authorization_code&client_id=${process.env.HUBSPOT_CLIENT_ID}&client_secret=${process.env.HUBSPOT_CLIENT_SECRET}&redirect_uri=${process.env.HUBSPOT_REDIRECT_URI}&code=${code}`,
   };
 
-  request(options, (error, response, body) => {
-    if (error) {
-      res.send('Error during token request: ' + error);
-      return;
+  try {
+    const response = await axios(options);
+    const responseBody = response.data;
+
+    // Save tokens to Firestore
+    const userAuthRef = doc(firestore, 'user_auth', userId);
+    await setDoc(userAuthRef, {
+      access_token: responseBody.access_token,
+      refresh_token: responseBody.refresh_token,
+    });
+
+    res.send('Successfully authenticated! Access Token: ' + responseBody.access_token);
+  } catch (error) {
+    if (error.response && error.response.data) {
+      res.send('Error: ' + error.response.data.error_description);
+    } else {
+      res.send('Error during token request: ' + error.message);
     }
-
-    const responseBody = JSON.parse(body);
-
-    if (responseBody.error) {
-      res.send('Error: ' + responseBody.error_description);
-      return;
-    }
-
-    // Save tokens to session
-    req.session.access_token = responseBody.access_token;
-    req.session.refresh_token = responseBody.refresh_token;
-
-    res.send('Successfully authenticated! Access Token: ' + req.session.access_token);
-  });
+  }
 };
