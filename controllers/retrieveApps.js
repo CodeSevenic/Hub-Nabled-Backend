@@ -1,6 +1,6 @@
 ﻿const axios = require('axios');
 
-app.get('/apps', (req, res) => {
+exports.retrieveApps = (req, res) => {
   if (!req.session.access_token) {
     res.status(401).send('Notauthenticated');
     return;
@@ -30,4 +30,4 @@ app.get('/apps', (req, res) => {
         res.send('Error during installed apps request: ' + error.message);
       }
     });
-});
+};
