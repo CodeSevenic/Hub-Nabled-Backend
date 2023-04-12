@@ -1,4 +1,9 @@
 ﻿exports.hsAuth = (req, res) => {
-  const authUrl = `https://app.hubspot.com/oauth/authorize?client_id=${process.env.HUBSPOT_CLIENT_ID}&scope=contacts%20timeline&redirect_uri=${process.env.HUBSPOT_REDIRECT_URI}`;
-  res.redirect(authUrl);
+  const clientId = process.env.APP1_CLIENT_ID;
+  const scope = 'crm.objects.contacts.read';
+  const redirectUri = process.env.HUBSPOT_REDIRECT_URI;
+
+  const authUrl = `https://app.hubspot.com/oauth/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
+  console.log('Client ID: ', clientId);
+  res.json({ authUrl });
 };
