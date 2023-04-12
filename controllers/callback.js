@@ -5,7 +5,7 @@ const { firestore } = require('../firebase-db/firebase');
 exports.handleCallback = async (req, res) => {
   const code = req.query.code;
   const userId = req.query.user_id;
-
+  console.log('Hello World');
   const options = {
     method: 'post',
     url: 'https://api.hubapi.com/oauth/v1/token',
@@ -18,7 +18,7 @@ exports.handleCallback = async (req, res) => {
   try {
     const response = await axios(options);
     const responseBody = response.data;
-
+    console.log('callback code: ', code);
     // Save tokens to Firestore
     const userAuthRef = doc(firestore, 'user_auth', userId);
     await setDoc(userAuthRef, {
