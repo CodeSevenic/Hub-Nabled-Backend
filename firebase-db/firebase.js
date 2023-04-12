@@ -3,12 +3,12 @@ const { getFirestore } = require('firebase/firestore');
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
+  apiKey: 'AIzaSyC-PJULEiHyN_Yp5oDXDh7mZ_8jifkPUno',
+  authDomain: 'hub-nabled.firebaseapp.com',
+  projectId: 'hub-nabled',
+  storageBucket: 'hub-nabled.appspot.com',
+  messagingSenderId: '820374872726',
+  appId: '1:820374872726:web:421dd64cf3c603323bd8b7',
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
