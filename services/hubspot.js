@@ -102,6 +102,10 @@ const getContact = async (accessToken) => {
   }
 };
 const isAuthorized = (userId) => {
+  if (!userId) {
+    console.error('Error: userId is undefined');
+    return false;
+  }
   return refreshTokenStore[userId] ? true : false;
 };
 
@@ -123,4 +127,5 @@ module.exports = {
   getContact,
   isAuthorized,
   displayContactName,
+  refreshTokenStore,
 };

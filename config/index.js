@@ -3,12 +3,12 @@
 dotenv.config();
 
 const config = {
-  CLIENT_ID: process.env.CLIENT_ID,
-  CLIENT_SECRET: process.env.CLIENT_SECRET,
-  SCOPES: process.env.SCOPE
-    ? process.env.SCOPE.split(/ |, ?|%20/).join(' ')
+  CLIENT_ID: process.env.APP1_CLIENT_ID,
+  CLIENT_SECRET: process.env.APP1_CLIENT_SECRET,
+  SCOPES: process.env.APP1_SCOPES
+    ? process.env.APP1_SCOPES.split(/ |, ?|%20/).join(' ')
     : ['crm.objects.contacts.read'],
-  PORT: process.env.PORT || 3000,
+  PORT: process.env.PORT || 4000,
 };
 
 if (!config.CLIENT_ID || !config.CLIENT_SECRET) {
