@@ -1,5 +1,6 @@
 ﻿const express = require('express');
 const session = require('express-session');
+const opn = require('open');
 const app = express();
 const { PORT } = require('./config');
 const authRoutes = require('./routes/auth');
@@ -17,3 +18,4 @@ app.use('/', indexRoutes);
 app.use('/', authRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
+opn(`http://localhost:${PORT}`);

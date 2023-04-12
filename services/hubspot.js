@@ -1,11 +1,9 @@
 ﻿const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT } = require('../config');
+const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
-
-const REDIRECT_URI = `http://localhost:${PORT}/oauth-callback`;
 
 const authUrl =
   'https://app.hubspot.com/oauth/authorize' +

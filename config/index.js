@@ -9,6 +9,7 @@ const config = {
     ? process.env.APP1_SCOPES.split(/ |, ?|%20/).join(' ')
     : ['crm.objects.contacts.read'],
   PORT: process.env.PORT || 4000,
+  REDIRECT_URI: `http://localhost:${PORT}/api/v1/callback`,
 };
 
 if (!config.CLIENT_ID || !config.CLIENT_SECRET) {
