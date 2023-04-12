@@ -3,7 +3,8 @@ const { doc, getDoc } = require('firebase/firestore');
 const { firestore } = require('../firebase-db/firebase');
 
 exports.retrieveApps = async (req, res) => {
-  const userId = req.query.user_id; // Assuming user_id is passed as a query parameter
+  // Assuming user_id is passed as a query parameter
+  const userId = req.query.user_id;
 
   // Retrieve access token from Firestore
   const userAuthRef = doc(firestore, 'user_auth', userId);
