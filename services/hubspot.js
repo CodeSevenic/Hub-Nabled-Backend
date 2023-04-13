@@ -64,12 +64,14 @@ const handleOauthCallback = async (req, res) => {
   }
 };
 
+// Exchanging Proof for an Access Token
 const exchangeForTokens = async (userId, exchangeProof) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
     });
-
+    // Usually, this token data should be persisted in a database and associated with
+    // a user identity.
     const tokens = JSON.parse(responseBody);
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
@@ -94,6 +96,8 @@ const refreshAccessToken = async (userId) => {
 };
 
 const getAccessToken = async (userId) => {
+  // If the access token has expired, retrieve
+  // a new one using the refresh token
   if (!accessTokenCache.get(userId)) {
     console.log('Refreshing expired access token');
     await refreshAccessToken(userId);
