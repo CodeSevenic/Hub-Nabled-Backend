@@ -40,7 +40,8 @@ const handleOauthCallback = async (req, res) => {
       redirect_uri: REDIRECT_URI,
       code: req.query.code,
     };
-
+    // Step 4
+    // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
     const token = await exchangeForTokens(req.sessionID, authCodeProof);
     if (token.message) {
