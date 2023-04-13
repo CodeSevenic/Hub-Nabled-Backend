@@ -20,7 +20,8 @@ const handleInstall = (authUrl) => (req, res) => {
 
 const handleOauthCallback = async (req, res) => {
   console.log('===> Step 3: Handling the request sent by the server');
-
+  // Received a user authorization code, so now combine that with the other
+  // required values and exchange both for an access token and a refresh token
   if (req.query.code) {
     console.log('       > Received an authorization token');
 
