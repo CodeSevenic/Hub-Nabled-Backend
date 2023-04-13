@@ -6,6 +6,7 @@ const { PORT } = require('./config');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 
+// Use a session to keep track of client ID
 app.use(
   session({
     secret: Math.random().toString(36).substring(2),
