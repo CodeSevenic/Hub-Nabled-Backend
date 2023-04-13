@@ -18,6 +18,14 @@ const handleInstall = (authUrl) => (req, res) => {
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
 
+// Step 2
+// The user is prompted to give the app access to the requested
+// resources. This is all done by HubSpot, so no work is necessary
+// on the app's end
+
+// Step 3
+// Receive the authorization code from the OAuth 2.0 Server,
+// and process it based on the query parameters that are passed
 const handleOauthCallback = async (req, res) => {
   console.log('===> Step 3: Handling the request sent by the server');
   // Received a user authorization code, so now combine that with the other
