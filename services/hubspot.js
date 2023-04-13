@@ -133,16 +133,6 @@ const isAuthorized = (userId) => {
   return refreshTokenStore[userId] ? true : false;
 };
 
-const displayContactName = (contact) => {
-  if (contact.status === 'error') {
-    return `<p>Unable to retrieve contact! Error Message: ${contact.message}</p>`;
-  }
-  const { firstname, lastname } = contact.properties;
-  return `<p>
-      Contact name: ${firstname.value} ${lastname.value}
-    </p>`;
-};
-
 module.exports = {
   authUrl,
   handleInstall,
@@ -150,6 +140,5 @@ module.exports = {
   getAccessToken,
   getContact,
   isAuthorized,
-  displayContactName,
   refreshTokenStore,
 };

@@ -6,7 +6,9 @@ const isAuthorized = require('../middlewares/auth');
 router.get('/', isAuthorized, async (req, res) => {
   const accessToken = await getAccessToken(req.sessionID);
   const contact = await getContact(accessToken);
-  res.render('index', { accessToken, contact });
+  const { firstname, lastname } = contact.properties;
+  console.log(firstname, lastname);
+  res.write(`<p>Contact name: ${firstname.value} ${lastname.value}</p>`);
 });
 
 router.get('/error', (req, res) => {
