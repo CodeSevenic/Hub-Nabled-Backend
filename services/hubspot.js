@@ -11,6 +11,8 @@ const authUrl =
   `&scope=${encodeURIComponent(SCOPES)}` +
   `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 
+// Redirect the user from the installation page to
+// the authorization URL
 const handleInstall = (authUrl) => (req, res) => {
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===> Step 1: Redirecting user to your app's OAuth URL");
