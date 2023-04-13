@@ -1,5 +1,8 @@
 ﻿const request = require('request-promise-native');
 const NodeCache = require('node-cache');
+const { getDoc, doc, setDoc } = require('firebase/firestore');
+const { db } = require('../firebase/index');
+
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
 const refreshTokenStore = {};
@@ -70,9 +73,12 @@ const exchangeForTokens = async (userId, exchangeProof) => {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
     });
-    // Usually, this token data should be persisted in a database and associated with
-    // a user identity.
+
     const tokens = JSON.parse(responseBody);
+
+    // Store tokens in Firestore
+    await setDoc(doc(db, 'users', userId), { tokens });
+
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
@@ -125,12 +131,22 @@ const getContact = async (accessToken) => {
     return JSON.parse(e.response.body);
   }
 };
-const isAuthorized = (userId) => {
+// const isAuthorized = (userId) => {
+//   if (!userId) {
+//     console.error('Error: userId is undefined');
+//     return false;
+//   }
+//   return refreshTokenStore[userId] ? true : false;
+// };
+const isAuthorized = async (userId) => {
   if (!userId) {
     console.error('Error: userId is undefined');
     return false;
   }
-  return refreshTokenStore[userId] ? true : false;
+  // Check if the user is authorized by querying Firestore
+  const userDoc = await getDoc(doc(db, 'users', userId));
+
+  return userDoc.exists();
 };
 
 module.exports = {
