@@ -47,7 +47,8 @@ const handleOauthCallback = async (req, res) => {
     if (token.message) {
       return res.redirect(`/error?msg=${token.message}`);
     }
-
+    // Once the tokens have been retrieved, use them to make a query
+    // to the HubSpot API
     res.redirect(`/`);
   }
 };
