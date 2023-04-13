@@ -5,6 +5,15 @@ const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../con
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
+//================================//
+//   Running the OAuth 2.0 Flow   //
+//================================//
+
+// Step 1
+
+// Build the authorization URL to redirect a user
+// to when they choose to install the app
+
 const authUrl =
   'https://app.hubspot.com/oauth/authorize' +
   `?client_id=${encodeURIComponent(CLIENT_ID)}` +
