@@ -27,8 +27,10 @@ const authUrl =
 // the authorization URL
 const handleInstall = (authUrl) => (req, res) => {
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
-  console.log("===> Step 1: Redirecting user to your app's OAuth URL");
-  res.redirect(authUrl);
+  console.log("===>Step 1: Redirecting user to your app's OAuth URL");
+  const userId = req.query.userId; // Get the userId from the query parameter
+  const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
+  res.redirect(authUrlWithUserId);
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
 
@@ -54,10 +56,14 @@ const handleOauthCallback = async (req, res) => {
       redirect_uri: REDIRECT_URI,
       code: req.query.code,
     };
+
+    // Get the userId from the query parameter
+    const userId = req.query.userId;
+
     // Step 4
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const token = await exchangeForTokens(req.sessionID, authCodeProof);
+    const token = await exchangeForTokens(userId, authCodeProof);
     if (token.message) {
       return res.redirect(`/error?msg=${token.message}`);
     }
