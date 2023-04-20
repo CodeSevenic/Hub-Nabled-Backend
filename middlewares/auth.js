@@ -19,7 +19,7 @@ const authMiddleware = async (req, res, next) => {
       <body>
           <h1>You are not authorized</h1>
           <p>
-              <a href="/install">
+              <a href="/api/install">
                   <button>Install</button>
               </a>
           </p>

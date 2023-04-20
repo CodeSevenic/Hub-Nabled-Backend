@@ -65,7 +65,7 @@ app.post('/api/install', async (req, res) => {
 });
 
 // API route for handling OAuth callback
-app.get('/api/oauth-callback', hubspot.handleOauthCallback);
+// app.get('/api/oauth-callback', hubspot.handleOauthCallback);
 
 // API route for checking user authorization
 app.get('/api/authorized', async (req, res) => {
@@ -74,8 +74,8 @@ app.get('/api/authorized', async (req, res) => {
   res.status(200).json({ authorized });
 });
 
-app.use('/', indexRoutes);
-app.use('/', authRoutes);
+app.use('/api/', indexRoutes);
+app.use('/api/', authRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
-opn(`http://localhost:${PORT}`);
+opn(`http://localhost:${PORT}/api/`);
