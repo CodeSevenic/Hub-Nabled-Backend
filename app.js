@@ -25,20 +25,25 @@ const { generateUniqueID } = require('../hb-frontend/src/utils/idGenerator');
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password } = req.body;
-    // Implement user registration logic here
-    // For example, you can store user information in Firebase
-    const userId = generateUniqueID(); // Generate a unique user ID, e.g., using a UUID library or Firebase Auth
 
+    // Implement user registration logic here
+    const userId = generateUniqueID(); // Generate a unique user ID
+
+    // Hash the password before storing it (bcrypt, for example)
+    const hashedPassword = await hashPassword(password);
+
+    // Save user info
     await setDoc(doc(db, 'users', userId), {
       email: email,
-      password: password, // Note: Storing passwords in plain text is not secure. You should hash the password before storing it.
+      password: hashedPassword,
     });
 
-    res.status(200).json({ message: 'User registered successfully', userId });
+    res.status(200).json({ message: 'User registered successfully', userId, email });
   } catch (error) {
     res.status(400).json({ message: 'User registration failed', error: error.message });
   }
 });
+
 // API route for user login
 app.post('/api/login', async (req, res) => {
   // Implement user login logic here

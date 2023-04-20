@@ -57,16 +57,37 @@ const handleOauthCallback = async (req, res) => {
       code: req.query.code,
     };
 
-    // Get the userId from the query parameter
-    const userId = req.query.userId;
-
-    // Step 4
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const token = await exchangeForTokens(userId, authCodeProof);
-    if (token.message) {
-      return res.redirect(`/error?msg=${token.message}`);
+    const tokens = await exchangeForTokens(authCodeProof);
+
+    if (tokens.message) {
+      return res.redirect(`/error?msg=${tokens.message}`);
     }
+
+    // Get user info from the OAuth provider (e.g., HubSpot)
+    const userInfo = await getUserInfoFromOauthProvider(tokens);
+
+    // Check if the user exists in your Firebase database using the email
+    const userSnapshot = await getDocs(
+      query(collection(db, 'users'), where('email', '==', userInfo.email))
+    );
+
+    if (!userSnapshot.empty) {
+      // If the user exists, update the OAuth info
+      const userId = userSnapshot.docs[0].id;
+      await updateDoc(doc(db, 'users', userId), {
+        tokens: tokens,
+      });
+    } else {
+      // If the user doesn't exist, create a new user with the OAuth info
+      const userId = generateUniqueID();
+      await setDoc(doc(db, 'users', userId), {
+        email: userInfo.email,
+        tokens: tokens,
+      });
+    }
+
     // Once the tokens have been retrieved, use them to make a query
     // to the HubSpot API
     res.redirect(`/`);
