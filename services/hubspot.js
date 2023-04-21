@@ -65,25 +65,26 @@ const handleOauthCallback = async (req, res) => {
       return res.redirect(`/error?msg=${tokens.message}`);
     }
 
-    // Get user info from the OAuth provider (e.g., HubSpot)
-    const userInfo = await getUserInfoFromOauthProvider(tokens);
+    // Get the userId and appName from the query param
+    const userId = req.query.userId;
+    const appName = req.query.appName;
 
-    // Check if the user exists in your Firebase database using the email
-    const userSnapshot = await getDocs(
-      query(collection(db, 'users'), where('email', '==', userInfo.email))
+    // Check if the app exists in the user's appAuths subcollection
+    const appSnapshot = await getDocs(
+      query(collection(db, `users/${userId}/appAuths`), where('appName', '==', appName))
     );
 
-    if (!userSnapshot.empty) {
-      // If the user exists, update the OAuth info
-      const userId = userSnapshot.docs[0].id;
-      await updateDoc(doc(db, 'users', userId), {
+    if (!appSnapshot.empty) {
+      // If the app exists, update the OAuth info
+      const appId = appSnapshot.docs[0].id;
+      await updateDoc(doc(db, `users/${userId}/appAuths`, appId), {
         tokens: tokens,
       });
     } else {
-      // If the user doesn't exist, create a new user with the OAuth info
-      const userId = generateUniqueID();
-      await setDoc(doc(db, 'users', userId), {
-        email: userInfo.email,
+      // If the app doesn't exist, create a new app entry in the user's appAuths subcollection
+      const appId = generateUniqueID();
+      await setDoc(doc(db, `users/${userId}/appAuths`, appId), {
+        appName: appName,
         tokens: tokens,
       });
     }
