@@ -1,12 +1,20 @@
 ﻿const express = require('express');
 const session = require('express-session');
 const opn = require('open');
+const cors = require('cors');
 
 const app = express();
 const { PORT } = require('./config');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 const { isAuthorized } = require('./services/hubspot');
+
+// app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Set CORS headers
+app.use(cors());
 
 // Use a session to keep track of client ID
 app.use(
@@ -16,47 +24,6 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-const { setDoc, doc } = require('firebase/firestore');
-const { db } = require('./firebase/index');
-const { generateUniqueID } = require('../hb-frontend/src/utils/idGenerator');
-
-// API route for user registration
-app.post('/api/register', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Implement user registration logic here
-    const userId = generateUniqueID(); // Generate a unique user ID
-
-    // Hash the password before storing it (bcrypt, for example)
-    const hashedPassword = await hashPassword(password);
-
-    // Save user info
-    await setDoc(doc(db, 'users', userId), {
-      email: email,
-      password: hashedPassword,
-    });
-
-    res.status(200).json({ message: 'User registered successfully', userId, email });
-  } catch (error) {
-    res.status(400).json({ message: 'User registration failed', error: error.message });
-  }
-});
-
-// API route for user login
-app.post('/api/login', async (req, res) => {
-  // Implement user login logic here
-  // For example, you can retrieve user information from Firebase and validate the credentials
-  const { email, password } = req.body;
-  const userId = ''; // Retrieve the user ID based on the provided email and password
-
-  if (userId) {
-    res.status(200).json({ message: 'User logged in successfully', userId });
-  } else {
-    res.status(400).json({ message: 'User login failed' });
-  }
-});
 
 // API route for installing an app
 app.post('/api/install', async (req, res) => {
@@ -69,9 +36,6 @@ app.post('/api/install', async (req, res) => {
   }
 });
 
-// API route for handling OAuth callback
-// app.get('/api/oauth-callback', hubspot.handleOauthCallback);
-
 // API route for checking user authorization
 app.get('/api/authorized', async (req, res) => {
   const userId = req.query.userId;
@@ -83,4 +47,4 @@ app.use('/api/', indexRoutes);
 app.use('/api/', authRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
-opn(`http://localhost:${PORT}/api/`);
+// opn(`http://localhost:${PORT}/api/`);

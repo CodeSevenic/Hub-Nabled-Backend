@@ -2,7 +2,7 @@
 
 dotenv.config();
 
-const PORT = process.env.PORT || 8000;
+const PORT = 4000;
 
 const config = {
   CLIENT_ID: process.env.APP1_CLIENT_ID,
