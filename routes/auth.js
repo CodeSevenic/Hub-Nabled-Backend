@@ -2,6 +2,7 @@
 const router = express.Router();
 const { authUrl, handleInstall, handleOauthCallback } = require('../services/hubspot');
 const { register, login } = require('../controllers/auth');
+
 // API route for user registration
 router.post('/register', register);
 // API route for user login
