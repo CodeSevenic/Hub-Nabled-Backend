@@ -13,6 +13,7 @@ exports.register = async (req, res) => {
     const userDoc = await getDoc(userDocRef);
 
     if (userDoc.exists()) {
+      console.log('Email already in use');
       return res.status(400).json({ message: 'Email already in use' });
     }
 
@@ -31,9 +32,11 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(200).json({ message: 'User registered successfully', userId, email });
+    res.status(200).json({ status: true, message: 'User registered successfully', userId, email });
   } catch (error) {
-    res.status(400).json({ message: 'User registration failed', error: error.message });
+    res
+      .status(400)
+      .json({ status: false, message: 'User registration failed', error: error.message });
   }
 };
 
@@ -50,15 +53,20 @@ exports.login = async (req, res) => {
 
     const isValidPassword = await comparePassword(password, userDoc.data().password);
 
+    console.log('User Info: ', userDoc.data());
+
     console.log('isValidPassword: ', isValidPassword);
 
     // Check if the user document exists and the password is correct
     if (userDoc.exists() && isValidPassword) {
       // If both conditions are met, the user is considered logged in
       console.log('Login successfully');
-      res
-        .status(200)
-        .json({ message: 'User logged in successfully', userId: userDoc.data().userId, email });
+      res.status(200).json({
+        message: 'User logged in successfully',
+        userId: userDoc.data().userId,
+        email,
+        isAdmin: userDoc.data().isAdmin,
+      });
     } else {
       console.log('Login Failed');
       // If either condition is not met, return an error message

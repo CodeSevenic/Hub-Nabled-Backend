@@ -32,21 +32,6 @@ app.use(
   })
 );
 
-// API route to get apps from developer account
-app.get('/api/hubspot/apps', async (req, res) => {
-  const url = `https://api.hubapi.com/integrations/v1/me?hapikey=eu1-a747-9672-49b3-a908-00b83c80c437&userId=50868284`;
-
-  console.log('Called 😁');
-
-  try {
-    const response = await axios.get(url);
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error('Error fetching apps:', error);
-    res.status(500).json({ error: 'Unable to fetch HubSpot apps' });
-  }
-});
-
 // API route for checking user authorization
 app.get('/api/authorized', async (req, res) => {
   const userId = req.query.userId;
