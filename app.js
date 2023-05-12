@@ -10,6 +10,8 @@ const indexRoutes = require('./routes/index');
 const { isAuthorized } = require('./services/hubspot');
 const { default: axios } = require('axios');
 
+const { collection, addDoc } = require('firebase/firestore');
+
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -31,6 +33,19 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+// API route to fetch HubSpot apps
+app.post('/apps', async (req, res) => {
+  const appData = req.body;
+
+  try {
+    const docRef = await addDoc(collection(db, 'apps'), appData);
+    res.status(201).json({ id: docRef.id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while saving the app' });
+  }
+});
 
 // API route for checking user authorization
 app.get('/api/authorized', async (req, res) => {
