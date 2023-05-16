@@ -55,6 +55,21 @@ app.post('/apps', async (req, res) => {
   }
 });
 
+// API route to get HubSpot apps from Firebase
+app.get('/apps', async (req, res) => {
+  try {
+    const snapshot = await db.collection('apps').get();
+    const apps = [];
+    snapshot.forEach((doc) => {
+      apps.push({ id: doc.id, ...doc.data() });
+    });
+    res.status(200).json(apps);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while fetching the apps' });
+  }
+});
+
 // API route for checking user authorization
 app.get('/api/authorized', async (req, res) => {
   const userId = req.query.userId;
