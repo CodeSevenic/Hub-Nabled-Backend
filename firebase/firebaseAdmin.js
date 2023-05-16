@@ -5,3 +5,5 @@ var serviceAccount = require('../env/hub-nabled-firebase-adminsdk-z9tzu-4de95eb8
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
+exports.db = admin.firestore();

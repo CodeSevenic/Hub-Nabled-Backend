@@ -11,6 +11,7 @@ const { isAuthorized } = require('./services/hubspot');
 const { default: axios } = require('axios');
 
 const { collection, addDoc } = require('firebase/firestore');
+const { db } = require('./firebase/firebaseAdmin');
 
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));
@@ -34,12 +35,13 @@ app.use(
   })
 );
 
-// API route to fetch HubSpot apps
+// API route to Add HubSpot apps to Firebase
 app.post('/apps', async (req, res) => {
   const appData = req.body;
 
   try {
-    const docRef = await addDoc(collection(db, 'apps'), appData);
+    const docRef = await db.collection('apps').add(appData);
+    console.log('Document written with ID: ', docRef.id);
     res.status(201).json({ id: docRef.id });
   } catch (error) {
     console.error(error);
