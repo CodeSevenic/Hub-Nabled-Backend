@@ -63,6 +63,7 @@ app.get('/apps', async (req, res) => {
     snapshot.forEach((doc) => {
       apps.push({ id: doc.id, ...doc.data() });
     });
+    console.log('apps: ', apps);
     res.status(200).json(apps);
   } catch (error) {
     console.error(error);
