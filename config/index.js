@@ -13,7 +13,7 @@ const config = {
     ? process.env.APP1_SCOPES.split(/ |, ?|%20/).join(' ')
     : ['crm.objects.contacts.read'],
   PORT: PORT,
-  REDIRECT_URI: `http://localhost:${PORT}/oauth-callback`,
+  REDIRECT_URI: `http://localhost:${PORT}/api/oauth-callback`,
 };
 
 if (!config.CLIENT_ID || !config.CLIENT_SECRET) {

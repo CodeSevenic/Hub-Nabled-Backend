@@ -1,7 +1,7 @@
 ﻿const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const { getDoc, doc, setDoc } = require('firebase/firestore');
-const { db } = require('../firebase/index');
+const { db } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
@@ -23,9 +23,29 @@ const authUrl =
   `&scope=${encodeURIComponent(SCOPES)}` +
   `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 
+const getAppById = async (appId) => {
+  try {
+    const doc = await db.collection('apps').doc(appId).get();
+
+    if (!doc.exists) {
+      console.log('No such document!');
+    } else {
+      console.log('Document data:', doc.data());
+      return doc.data().clientSecret;
+    }
+  } catch (error) {
+    // In case of any other errors, return a server error status
+    console.error(error);
+  }
+};
+
 // Redirect the user from the installation page to
 // the authorization URL
-const handleInstall = (authUrl) => (req, res) => {
+const handleInstall = (authUrl) => async (req, res) => {
+  const appId = req.query.app_id;
+  const clientSecret = await getAppById(appId);
+  console.log('clientSecret: ', clientSecret);
+
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
   const userId = req.query.userId; // Get the userId from the query parameter
