@@ -43,13 +43,12 @@ const getAppById = async (appId) => {
 // the authorization URL
 const handleInstall = (authUrl) => async (req, res) => {
   const appId = req.query.app_id;
-  const clientSecret = await getAppById(appId);
-  console.log('clientSecret: ', clientSecret);
 
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
   const userId = req.query.userId; // Get the userId from the query parameter
-  const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
+  const authUrlWithUserId =
+    `${authUrl}&state=${encodeURIComponent(userId)}` + `?app_id=${appId}` + `?userId=${userId}`;
   res.redirect(authUrlWithUserId);
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
@@ -68,11 +67,18 @@ const handleOauthCallback = async (req, res) => {
   // required values and exchange both for an access token and a refresh token
   if (req.query.code) {
     console.log('       > Received an authorization token');
+    // Get the app ID from the query param
+    const appId = req.query.app_id;
+    console.log('appId: ', appId);
+
+    // Get client secret from Firebase
+    const clientSecret = await getAppById(appId);
+    console.log('clientSecret II: ', clientSecret);
 
     const authCodeProof = {
       grant_type: 'authorization_code',
       client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
+      client_secret: clientSecret,
       redirect_uri: REDIRECT_URI,
       code: req.query.code,
     };
