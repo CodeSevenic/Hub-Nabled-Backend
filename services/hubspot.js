@@ -91,6 +91,8 @@ const handleOauthCallback = async (req, res) => {
 
     // Get the userId and appName from the query param
     const appName = req.query.appName;
+    console.log('appName: ', appName);
+    console.log('userId: ', userId);
 
     /*
     // Check if the app exists in the user's appAuths subcollection
