@@ -8,7 +8,7 @@ router.post('/register', register);
 // API route for user login
 router.post('/login', login);
 // API route to initiate app install
-router.get('/install', handleInstall(authUrl));
+router.get('/install', handleInstall);
 // API route to run Oauth function
 router.get('/oauth-callback', handleOauthCallback);
 

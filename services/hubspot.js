@@ -17,12 +17,6 @@ const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 // Build the authorization URL to redirect a user
 // to when they choose to install the app
 
-const authUrl =
-  'https://app.hubspot.com/oauth/authorize' +
-  `?client_id=${encodeURIComponent(CLIENT_ID)}` +
-  `&scope=${encodeURIComponent(SCOPES)}` +
-  `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
-
 const getAppById = async (appId) => {
   try {
     const doc = await db.collection('apps').doc(appId).get();
@@ -31,7 +25,7 @@ const getAppById = async (appId) => {
       console.log('No such document!');
     } else {
       console.log('Document data:', doc.data());
-      return doc.data().clientSecret;
+      return doc.data();
     }
   } catch (error) {
     // In case of any other errors, return a server error status
@@ -39,19 +33,29 @@ const getAppById = async (appId) => {
   }
 };
 
+let currentAppId;
+
 // Redirect the user from the installation page to
 // the authorization URL
-const handleInstall = (authUrl) => async (req, res) => {
+const handleInstall = async (req, res) => {
   const appId = req.query.app_id;
-  const clientSecret = await getAppById(appId);
-  console.log('clientSecret: ', clientSecret);
+  currentAppId = appId;
+  const app = await getAppById(appId);
+  console.log('Hello clientSecret: ', app.clientSecret);
 
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
   const userId = req.query.userId; // Get the userId from the query parameter
   console.log('userId: ', userId);
-  const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
-  res.redirect(authUrlWithUserId);
+  // const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
+  const authUrl =
+    'https://app.hubspot.com/oauth/authorize' +
+    `?client_id=${encodeURIComponent(CLIENT_ID)}` +
+    `&scope=${encodeURIComponent(SCOPES)}` +
+    `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+    `&state=${encodeURIComponent(userId)}` +
+    `&hello=${encodeURIComponent(userId)}`;
+  res.redirect(authUrl);
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
 
@@ -91,7 +95,6 @@ const handleOauthCallback = async (req, res) => {
 
     // Get the userId and appName from the query param
     const appName = req.query.appName;
-    console.log('appName: ', appName);
     console.log('userId: ', userId);
 
     /*
@@ -206,7 +209,6 @@ const isAuthorized = async (userId) => {
 };
 
 module.exports = {
-  authUrl,
   handleInstall,
   handleOauthCallback,
   getAccessToken,
