@@ -52,3 +52,16 @@ exports.getApps = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while fetching the apps' });
   }
 };
+
+// function to delete HubSpot app by appName from Firebase
+exports.deleteApp = async (req, res) => {
+  const { appName } = req.params;
+
+  try {
+    await db.collection('apps').doc(appName).delete();
+    res.status(200).json({ message: `App with name ${appName} successfully deleted` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while deleting the app' });
+  }
+};

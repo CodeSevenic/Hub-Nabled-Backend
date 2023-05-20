@@ -1,6 +1,5 @@
 ﻿const express = require('express');
-const { addApp, getApp } = require('../controllers/apps');
-const { get } = require('request');
+const { addApp, getApp, getApps, deleteApp } = require('../controllers/apps');
 
 const router = express.Router();
 
@@ -8,5 +7,9 @@ const router = express.Router();
 router.post('/apps', addApp);
 // API route to get HubSpot app by appName from Firebase
 router.get('/apps/:appName', getApp);
+// API route to get all HubSpot apps from Firebase
+router.get('/apps', getApps);
+// API route to delete app by appName from Firebase
+router.delete('/apps/:appName', deleteApp);
 
 module.exports = router;
