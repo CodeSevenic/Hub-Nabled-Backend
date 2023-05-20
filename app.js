@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const app = express();
 const { PORT, HUBSPOT_API_BASE_URL, HUBSPOT_API_KEY } = require('./config');
+const apps = require('./routes/apps');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 const { isAuthorized } = require('./services/hubspot');
@@ -34,26 +35,6 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-// API route to Add HubSpot apps to Firebase
-app.post('/apps', async (req, res) => {
-  const appData = req.body;
-
-  // Make sure appName is provided
-  if (!appData.appName) {
-    return res.status(400).json({ message: 'appName is required' });
-  }
-
-  try {
-    const docRef = db.collection('apps').doc(appData.appName);
-    await docRef.set(appData);
-    console.log('Document written with ID: ', appData.appName);
-    res.status(201).json({ id: appData.appName });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'An error occurred while saving the app' });
-  }
-});
 
 // API route to get HubSpot apps from Firebase
 app.get('/apps', async (req, res) => {
@@ -110,6 +91,7 @@ app.get('/api/authorized', async (req, res) => {
 
 app.use('/api/', indexRoutes);
 app.use('/api/', authRoutes);
+app.use('/api/', apps);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);

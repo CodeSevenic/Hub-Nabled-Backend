@@ -43,12 +43,14 @@ const getAppById = async (appId) => {
 // the authorization URL
 const handleInstall = (authUrl) => async (req, res) => {
   const appId = req.query.app_id;
+  const clientSecret = await getAppById(appId);
+  console.log('clientSecret: ', clientSecret);
 
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
   const userId = req.query.userId; // Get the userId from the query parameter
-  const authUrlWithUserId =
-    `${authUrl}&state=${encodeURIComponent(userId)}` + `?app_id=${appId}` + `?userId=${userId}`;
+  console.log('userId: ', userId);
+  const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
   res.redirect(authUrlWithUserId);
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
@@ -62,39 +64,35 @@ const handleInstall = (authUrl) => async (req, res) => {
 // Receive the authorization code from the OAuth 2.0 Server,
 // and process it based on the query parameters that are passed
 const handleOauthCallback = async (req, res) => {
+  // Get the userId from the query parameter state
+  const userId = req.query.state;
+
   console.log('===> Step 3: Handling the request sent by the server');
   // Received a user authorization code, so now combine that with the other
   // required values and exchange both for an access token and a refresh token
   if (req.query.code) {
     console.log('       > Received an authorization token');
-    // Get the app ID from the query param
-    const appId = req.query.app_id;
-    console.log('appId: ', appId);
-
-    // Get client secret from Firebase
-    const clientSecret = await getAppById(appId);
-    console.log('clientSecret II: ', clientSecret);
 
     const authCodeProof = {
       grant_type: 'authorization_code',
       client_id: CLIENT_ID,
-      client_secret: clientSecret,
+      client_secret: CLIENT_SECRET,
       redirect_uri: REDIRECT_URI,
       code: req.query.code,
     };
 
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const tokens = await exchangeForTokens(authCodeProof);
+    const tokens = await exchangeForTokens(userId, authCodeProof);
 
     if (tokens.message) {
       return res.redirect(`/error?msg=${tokens.message}`);
     }
 
     // Get the userId and appName from the query param
-    const userId = req.query.userId;
     const appName = req.query.appName;
 
+    /*
     // Check if the app exists in the user's appAuths subcollection
     const appSnapshot = await getDocs(
       query(collection(db, `users/${userId}/appAuths`), where('appName', '==', appName))
@@ -114,10 +112,12 @@ const handleOauthCallback = async (req, res) => {
         tokens: tokens,
       });
     }
+    */
 
     // Once the tokens have been retrieved, use them to make a query
     // to the HubSpot API
-    res.redirect(`/`);
+    // redirect to the frontend
+    res.redirect(`http://localhost:3000/oauth-complete`);
   }
 };
 
@@ -131,7 +131,7 @@ const exchangeForTokens = async (userId, exchangeProof) => {
     const tokens = JSON.parse(responseBody);
 
     // Store tokens in Firestore
-    await setDoc(doc(db, 'users', userId), { tokens });
+    // await setDoc(doc(db, 'users', userId), { tokens });
 
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
