@@ -11,6 +11,10 @@ const indexRoutes = require('./routes/index');
 const { isAuthorized } = require('./services/hubspot');
 const { default: axios } = require('axios');
 
+// const crypto = require('crypto');
+// const secret = crypto.randomBytes(32).toString('hex');
+// console.log('SECRET', secret);
+
 // app.use(express.json());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
