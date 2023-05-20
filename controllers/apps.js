@@ -36,3 +36,19 @@ exports.getApp = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while fetching the app' });
   }
 };
+
+// function to get all HubSpot apps from Firebase
+exports.getApps = async (req, res) => {
+  try {
+    const snapshot = await db.collection('apps').get();
+    const apps = [];
+    snapshot.forEach((doc) => {
+      apps.push({ id: doc.id, ...doc.data() });
+    });
+    console.log('apps: ', apps);
+    res.status(200).json(apps);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while fetching the apps' });
+  }
+};
