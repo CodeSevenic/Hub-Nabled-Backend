@@ -2,7 +2,7 @@
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const { getDoc, doc, setDoc } = require('firebase/firestore');
-const { db, storeUserAppAuths } = require('../firebase/firebaseAdmin');
+const { db, storeUserAppAuth } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
@@ -124,8 +124,8 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
     });
 
     const tokens = JSON.parse(responseBody);
-
-    storeUserAppAuths(userId, appId, tokens);
+    // store user app auth by updating the user document in Firebase
+    storeUserAppAuth(userId, appId, tokens);
 
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));

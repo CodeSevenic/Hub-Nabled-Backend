@@ -9,7 +9,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // Store authentications under a user account
-exports.storeUserAppAuths = async (userId, appId, tokens) => {
+const storeUserAppAuth = async (userId, appId, tokens) => {
   // Get the user document reference
   const userDoc = db.doc(`users/${userId}`);
 
@@ -38,4 +38,4 @@ exports.storeUserAppAuths = async (userId, appId, tokens) => {
   }
 };
 
-module.exports = { db };
+module.exports = { db, storeUserAppAuth };
