@@ -1,4 +1,5 @@
-﻿const request = require('request-promise-native');
+﻿const dotenv = require('dotenv');
+const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const { getDoc, doc, setDoc } = require('firebase/firestore');
 const { db } = require('../firebase/firebaseAdmin');
@@ -17,9 +18,9 @@ const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 // Build the authorization URL to redirect a user
 // to when they choose to install the app
 
-const getAppById = async (appId) => {
+const getAppByName = async (appName) => {
   try {
-    const doc = await db.collection('apps').doc(appId).get();
+    const doc = await db.collection('apps').doc(appName).get();
 
     if (!doc.exists) {
       console.log('No such document!');
@@ -33,28 +34,31 @@ const getAppById = async (appId) => {
   }
 };
 
-let currentAppId;
-
 // Redirect the user from the installation page to
 // the authorization URL
 const handleInstall = async (req, res) => {
-  const appId = req.query.app_id;
-  currentAppId = appId;
-  const app = await getAppById(appId);
-  console.log('Hello clientSecret: ', app.clientSecret);
+  // get the app name from the query parameter
+  const appName = req.query.appName;
+  console.log('appName: ', appName);
+  // save the app name to the session
+  req.session.appName = appName;
+  // get the app by name from Firebase
+  const app = await getAppByName(appName);
+  // save the app id to the session
+  req.session.appId = app.appId;
 
   console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
-  const userId = req.query.userId; // Get the userId from the query parameter
+  // Get the userId from the query parameter
+  const userId = req.query.userId;
   console.log('userId: ', userId);
-  // const authUrlWithUserId = `${authUrl}&state=${encodeURIComponent(userId)}`;
+
   const authUrl =
     'https://app.hubspot.com/oauth/authorize' +
     `?client_id=${encodeURIComponent(CLIENT_ID)}` +
     `&scope=${encodeURIComponent(SCOPES)}` +
     `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-    `&state=${encodeURIComponent(userId)}` +
-    `&hello=${encodeURIComponent(userId)}`;
+    `&state=${encodeURIComponent(userId)}`;
   res.redirect(authUrl);
   console.log('===> Step 2: User is being prompted for consent by HubSpot');
 };
@@ -70,6 +74,15 @@ const handleInstall = async (req, res) => {
 const handleOauthCallback = async (req, res) => {
   // Get the userId from the query parameter state
   const userId = req.query.state;
+  const appName = req.session.appName;
+  const appId = req.session.appId;
+
+  if (appName && appId) {
+    console.log('appId from session: ', appName);
+    console.log('appName from session: ', appId);
+  } else {
+    console.log('appId is undefined');
+  }
 
   console.log('===> Step 3: Handling the request sent by the server');
   // Received a user authorization code, so now combine that with the other
@@ -94,7 +107,6 @@ const handleOauthCallback = async (req, res) => {
     }
 
     // Get the userId and appName from the query param
-    const appName = req.query.appName;
     console.log('userId: ', userId);
 
     /*

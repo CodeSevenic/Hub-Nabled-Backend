@@ -31,9 +31,10 @@ app.use(function (req, res, next) {
 // Use a session to keep track of client ID
 app.use(
   session({
-    secret: Math.random().toString(36).substring(2),
+    secret: process.env.SESSION_SECRET, // This should be a long and complex string
     resave: false,
     saveUninitialized: true,
+    //cookie: { secure: true }, // Note: secure should be set to true when in production and your site uses HTTPS
   })
 );
 

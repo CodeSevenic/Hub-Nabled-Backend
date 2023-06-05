@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
 
     const isValidPassword = await comparePassword(password, userDoc.data().password);
 
-    console.log('User Info: ', userDoc.data());
+    // console.log('User Info: ', userDoc.data());
 
     console.log('isValidPassword: ', isValidPassword);
 
