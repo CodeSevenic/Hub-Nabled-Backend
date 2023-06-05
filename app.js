@@ -2,14 +2,17 @@
 const session = require('express-session');
 const opn = require('open');
 const cors = require('cors');
+const { default: axios } = require('axios');
 
 const app = express();
 const { PORT } = require('./config');
+
+const { isAuthorized } = require('./services/hubspot');
+// API routes
 const apps = require('./routes/apps');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
-const { isAuthorized } = require('./services/hubspot');
-const { default: axios } = require('axios');
+const contactsRoutes = require('./routes/contacts');
 
 // const crypto = require('crypto');
 // const secret = crypto.randomBytes(32).toString('hex');
@@ -48,6 +51,7 @@ app.get('/api/authorized', async (req, res) => {
 app.use('/api/', indexRoutes);
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
+app.use('/api/', contactsRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);

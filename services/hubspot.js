@@ -2,7 +2,7 @@
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
 const { getDoc, doc, setDoc } = require('firebase/firestore');
-const { db } = require('../firebase/firebaseAdmin');
+const { db, storeUserAppAuths } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
@@ -100,7 +100,7 @@ const handleOauthCallback = async (req, res) => {
 
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const tokens = await exchangeForTokens(userId, authCodeProof);
+    const tokens = await exchangeForTokens(userId, authCodeProof, appId);
 
     if (tokens.message) {
       return res.redirect(`/error?msg=${tokens.message}`);
@@ -109,28 +109,6 @@ const handleOauthCallback = async (req, res) => {
     // Get the userId and appName from the query param
     console.log('userId: ', userId);
 
-    /*
-    // Check if the app exists in the user's appAuths subcollection
-    const appSnapshot = await getDocs(
-      query(collection(db, `users/${userId}/appAuths`), where('appName', '==', appName))
-    );
-
-    if (!appSnapshot.empty) {
-      // If the app exists, update the OAuth info
-      const appId = appSnapshot.docs[0].id;
-      await updateDoc(doc(db, `users/${userId}/appAuths`, appId), {
-        tokens: tokens,
-      });
-    } else {
-      // If the app doesn't exist, create a new app entry in the user's appAuths subcollection
-      const appId = generateUniqueID();
-      await setDoc(doc(db, `users/${userId}/appAuths`, appId), {
-        appName: appName,
-        tokens: tokens,
-      });
-    }
-    */
-
     // Once the tokens have been retrieved, use them to make a query
     // to the HubSpot API
     // redirect to the frontend
@@ -138,8 +116,8 @@ const handleOauthCallback = async (req, res) => {
   }
 };
 
-// Exchanging Proof for an Access Token
-const exchangeForTokens = async (userId, exchangeProof) => {
+// Exchanging Proof for an Access Token and Refresh Token
+const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
@@ -147,8 +125,7 @@ const exchangeForTokens = async (userId, exchangeProof) => {
 
     const tokens = JSON.parse(responseBody);
 
-    // Store tokens in Firestore
-    // await setDoc(doc(db, 'users', userId), { tokens });
+    storeUserAppAuths(userId, appId, tokens);
 
     refreshTokenStore[userId] = tokens.refresh_token;
     accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));

@@ -1,18 +1,18 @@
-﻿const { setDoc, doc, getDoc } = require('firebase/firestore');
-const { db } = require('../firebase/index');
-const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
+﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
+const { db } = require('../firebase/firebaseAdmin');
 
 // function for user registration API
+
 exports.register = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Check if the email already exists in the database
-    const userDocRef = doc(db, 'users', email);
-    const userDoc = await getDoc(userDocRef);
+    const userDocRef = db.doc(`users/${email}`);
+    const userDoc = await userDocRef.get();
 
-    if (userDoc.exists()) {
+    if (userDoc.exists) {
       console.log('Email already in use');
       return res.status(400).json({ message: 'Email already in use' });
     }
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Save user info
-    await setDoc(doc(db, 'users', email), {
+    await db.collection('users').doc(userId).set({
       userId: userId,
       email: email,
       password: hashedPassword,
@@ -45,27 +45,38 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    //
     console.log('Email: ', email, 'Password: ', password);
 
+    // Save user email to the session
+    req.session.userEmail = email;
+
     // Retrieve the user document from Firestore based on the provided email
-    const userDoc = await getDoc(doc(db, 'users', email));
+    const userSnapshot = await db.collection('users').where('email', '==', email).get();
 
-    const isValidPassword = await comparePassword(password, userDoc.data().password);
+    // If no user was found, respond with an error
+    if (userSnapshot.empty) {
+      console.log('Login Failed');
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
 
-    // console.log('User Info: ', userDoc.data());
+    // Otherwise, retrieve the user document
+    const userDoc = userSnapshot.docs[0];
+    const userData = userDoc.data();
+
+    // Verify the password
+    const isValidPassword = await comparePassword(password, userData.password);
 
     console.log('isValidPassword: ', isValidPassword);
 
     // Check if the user document exists and the password is correct
-    if (userDoc.exists() && isValidPassword) {
+    if (isValidPassword) {
       // If both conditions are met, the user is considered logged in
       console.log('Login successfully');
       res.status(200).json({
         message: 'User logged in successfully',
-        userId: userDoc.data().userId,
+        userId: userData.userId,
         email,
-        isAdmin: userDoc.data().isAdmin,
+        isAdmin: userData.isAdmin,
       });
     } else {
       console.log('Login Failed');
