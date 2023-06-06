@@ -1,7 +1,10 @@
 ﻿const { isAuthorized } = require('../services/hubspot');
 
 const authMiddleware = async (req, res, next) => {
-  const authorized = await isAuthorized(req.sessionID);
+  const userId = req.session.userId;
+  console.log('Auth Middleware userId: ', userId);
+  const hardCodedID = '1685968763573-bff90ed5-087d-479c-a8a8-0f17a3b186e0';
+  const authorized = await isAuthorized(hardCodedID);
   console.log(authorized);
   if (authorized) {
     // Use the imported isAuthorized function here

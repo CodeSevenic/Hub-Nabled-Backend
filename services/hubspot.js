@@ -76,6 +76,7 @@ const handleOauthCallback = async (req, res) => {
   const userId = req.query.state;
   const appName = req.session.appName;
   const appId = req.session.appId;
+  req.session.userId = userId;
 
   if (appName && appId) {
     console.log('appId from session: ', appName);
@@ -186,15 +187,22 @@ const getContact = async (accessToken) => {
 //   }
 //   return refreshTokenStore[userId] ? true : false;
 // };
+
 const isAuthorized = async (userId) => {
   if (!userId) {
     console.error('Error: userId is undefined');
     return false;
   }
-  // Check if the user is authorized by querying Firestore
-  const userDoc = await getDoc(doc(db, 'users', userId));
 
-  return userDoc.exists();
+  // Check if the user is authorized by querying Firestore
+  const userDoc = await db.collection('users').doc(userId).get();
+
+  if (userDoc.exists) {
+    console.log(`Document with id ${userDoc.id} exists`);
+    return true;
+  } else {
+    return false;
+  }
 };
 
 module.exports = {
