@@ -91,4 +91,20 @@ const getUserByEmail = async (email) => {
   }
 };
 
-module.exports = { db, storeUserAppAuth, getAppByName, getUserById, getUserByEmail };
+const getAppTokens = (userApps, appName = undefined) => {
+  let values = [];
+
+  if (appName) {
+    return userApps[appName];
+  } else {
+    for (let key in userApps) {
+      if (userApps.hasOwnProperty(key)) {
+        values.push(userApps[key]);
+      }
+    }
+
+    return values;
+  }
+};
+
+module.exports = { db, storeUserAppAuth, getAppByName, getUserById, getUserByEmail, getAppTokens };

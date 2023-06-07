@@ -1,6 +1,6 @@
 ﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
-const { db, getUserByEmail } = require('../firebase/firebaseAdmin');
+const { db, getUserByEmail, getUserById, getAppTokens } = require('../firebase/firebaseAdmin');
 const { isAuthorized, getAccessToken, getContact } = require('../services/hubspot');
 
 // function for user registration API
@@ -64,6 +64,12 @@ exports.login = async (req, res) => {
       req.session.userId = userData.userId;
 
       console.log('SessionID: ', req.sessionID);
+
+      const user = await getUserById(userData.userId);
+
+      const appTokens = getAppTokens(user.appAuths);
+
+      console.log('AppTokens: ', appTokens);
 
       res.status(200).json({
         message: 'User logged in successfully',
