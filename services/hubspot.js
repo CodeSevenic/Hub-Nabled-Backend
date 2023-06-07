@@ -164,7 +164,7 @@ const getAccessToken = async (userId) => {
     }
     return appToken.accessToken;
   } catch (e) {
-    // console.error('Error getting accessToken: ', e);
+    console.error('Error getting accessToken: ', e);
   }
 };
 
