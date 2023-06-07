@@ -1,7 +1,6 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { getDoc, doc, setDoc } = require('firebase/firestore');
 const { db, storeUserAppAuth } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
