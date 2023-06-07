@@ -1,7 +1,7 @@
 ﻿const { getAccessToken, getContact, isAuthorized } = require('../services/hubspot');
 
 exports.contacts = async (req, res) => {
-  // console.log('userId: ', req.session.userId);
+  const userId = req.session.userId;
   console.log('Contact userId: ', userId);
 
   const authorized = await isAuthorized(userId);
