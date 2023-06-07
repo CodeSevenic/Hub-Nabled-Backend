@@ -46,7 +46,7 @@ const getAppByName = async (appName) => {
     if (!doc.exists) {
       console.log('No such document!');
     } else {
-      console.log('Document data:', doc.data());
+      // console.log('Document data:', doc.data());
       return doc.data();
     }
   } catch (error) {
@@ -62,7 +62,7 @@ const getUserById = async (userId) => {
     if (!doc.exists) {
       console.log('No such document!');
     } else {
-      console.log('Document data:', doc.data());
+      // console.log('Document data:', doc.data());
       return doc.data();
     }
   } catch (error) {
@@ -102,7 +102,6 @@ const getAppTokens = (userApps, appName = undefined) => {
         values.push(userApps[key]);
       }
     }
-
     return values;
   }
 };
