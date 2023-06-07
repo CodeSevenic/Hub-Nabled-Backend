@@ -67,7 +67,11 @@ exports.login = async (req, res) => {
 
       const user = await getUserById(userData.userId);
 
-      const appTokens = getAppTokens(user.appAuths);
+      let appNames = Object.keys(user.appAuths);
+
+      console.log('AppNames: ', appNames[0]);
+
+      const appTokens = getAppTokens(user.appAuths, appNames[0]);
 
       console.log('AppTokens: ', appTokens);
 
