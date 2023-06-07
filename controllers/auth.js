@@ -65,16 +65,6 @@ exports.login = async (req, res) => {
 
       console.log('SessionID: ', req.sessionID);
 
-      const user = await getUserById(userData.userId);
-
-      let appNames = Object.keys(user.appAuths);
-
-      console.log('AppNames: ', appNames[0]);
-
-      const appTokens = getAppTokens(user.appAuths, appNames[0]);
-
-      console.log('AppTokens: ', appTokens);
-
       res.status(200).json({
         message: 'User logged in successfully',
         userId: userData.userId,

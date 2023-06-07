@@ -1,9 +1,16 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { db, storeUserAppAuth, getAppByName, getUserById } = require('../firebase/firebaseAdmin');
+const {
+  db,
+  storeUserAppAuth,
+  getAppByName,
+  getUserById,
+  getAppTokens,
+} = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
+const { app } = require('firebase-admin');
 
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -133,26 +140,36 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
 //   return await exchangeForTokens(userId, refreshTokenProof);
 // };
 
-// const refreshAccessToken = async (userId) => {
-//   const user = await getUserById(userId);
-//   const refreshTokenProof = {
-//     grant_type: 'refresh_token',
-//     client_id: CLIENT_ID,
-//     client_secret: CLIENT_SECRET,
-//     redirect_uri: REDIRECT_URI,
-//     refresh_token: user.appAuths[].refreshToken,
-//   };
-//   return await exchangeForTokens(userId, refreshTokenProof);
-// };
+const refreshAccessToken = async (userId) => {
+  const user = await getUserById(userId);
+  // get the app names from the user document
+  let appNames = Object.keys(user.appAuths);
+  // get the first app name
+  const appToken = getAppTokens(user.appAuths, appNames[0]);
+
+  const refreshTokenProof = {
+    grant_type: 'refresh_token',
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
+    redirect_uri: REDIRECT_URI,
+    refresh_token: appToken.refreshToken,
+  };
+  return await exchangeForTokens(userId, refreshTokenProof);
+};
 
 const getAccessToken = async (userId) => {
+  const user = await getUserById(userId);
+  // get the app names from the user document
+  let appNames = Object.keys(user.appAuths);
+  // get the first app name
+  const appToken = getAppTokens(user.appAuths, appNames[0]);
   // If the access token has expired, retrieve
   // a new one using the refresh token
-  if (!accessTokenCache.get(userId)) {
+  if (!appToken.accessToken) {
     console.log('Refreshing expired access token');
     await refreshAccessToken(userId);
   }
-  return accessTokenCache.get(userId);
+  return appToken.accessToken;
 };
 
 const getContact = async (accessToken) => {
