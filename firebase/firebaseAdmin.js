@@ -55,4 +55,20 @@ const getAppByName = async (appName) => {
   }
 };
 
-module.exports = { db, storeUserAppAuth, getAppByName };
+// Get user by document ID
+const getUserById = async (userId) => {
+  try {
+    const doc = await db.collection('users').doc(userId).get();
+    if (!doc.exists) {
+      console.log('No such document!');
+    } else {
+      console.log('Document data:', doc.data());
+      return doc.data();
+    }
+  } catch (error) {
+    // In case of any other errors, return a server error status
+    console.error(error);
+  }
+};
+
+module.exports = { db, storeUserAppAuth, getAppByName, getUserById };
