@@ -71,4 +71,24 @@ const getUserById = async (userId) => {
   }
 };
 
-module.exports = { db, storeUserAppAuth, getAppByName, getUserById };
+// Get user by email
+const getUserByEmail = async (email) => {
+  try {
+    const userSnapshot = await db.collection('users').where('email', '==', email).get();
+
+    // If no user was found, respond with an error
+    if (userSnapshot.empty) {
+      console.log('Login Failed');
+      return res.status(401).json({ message: 'Invalid email or password' });
+    } else {
+      // Otherwise, retrieve the user document
+      const userDoc = userSnapshot.docs[0];
+      return userDoc.data();
+    }
+  } catch (error) {
+    // In case of any other errors, return a server error status
+    console.error(error);
+  }
+};
+
+module.exports = { db, storeUserAppAuth, getAppByName, getUserById, getUserByEmail };

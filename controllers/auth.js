@@ -1,6 +1,6 @@
 ﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
-const { db } = require('../firebase/firebaseAdmin');
+const { db, getUserByEmail } = require('../firebase/firebaseAdmin');
 const { isAuthorized, getAccessToken, getContact } = require('../services/hubspot');
 
 // function for user registration API
@@ -46,28 +46,14 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log('Email: ', email, 'Password: ', password);
-
     // Save user email to the session
     req.session.userEmail = email;
 
     // Retrieve the user document from Firestore based on the provided email
-    const userSnapshot = await db.collection('users').where('email', '==', email).get();
-
-    // If no user was found, respond with an error
-    if (userSnapshot.empty) {
-      console.log('Login Failed');
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Otherwise, retrieve the user document
-    const userDoc = userSnapshot.docs[0];
-    const userData = userDoc.data();
+    const userData = await getUserByEmail(email);
 
     // Verify the password
     const isValidPassword = await comparePassword(password, userData.password);
-
-    console.log('isValidPassword: ', isValidPassword);
 
     // Check if the user document exists and the password is correct
     if (isValidPassword) {
@@ -77,8 +63,6 @@ exports.login = async (req, res) => {
       // save userId to the session
       req.session.userId = userData.userId;
 
-      const sessionUserId = req.session.userId;
-      console.log('sessionUserId: ', sessionUserId);
       console.log('SessionID: ', req.sessionID);
 
       res.status(200).json({

@@ -1,7 +1,7 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { db, storeUserAppAuth, getAppByName } = require('../firebase/firebaseAdmin');
+const { db, storeUserAppAuth, getAppByName, getUserById } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
@@ -111,8 +111,8 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
     // store user app auth by updating the user document in Firebase
     storeUserAppAuth(userId, appId, tokens);
 
-    refreshTokenStore[userId] = tokens.refresh_token;
-    accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
+    // refreshTokenStore[userId] = tokens.refresh_token;
+    // accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
 
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
@@ -122,16 +122,28 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
   }
 };
 
-const refreshAccessToken = async (userId) => {
-  const refreshTokenProof = {
-    grant_type: 'refresh_token',
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
-    redirect_uri: REDIRECT_URI,
-    refresh_token: refreshTokenStore[userId],
-  };
-  return await exchangeForTokens(userId, refreshTokenProof);
-};
+// const refreshAccessToken = async (userId) => {
+//   const refreshTokenProof = {
+//     grant_type: 'refresh_token',
+//     client_id: CLIENT_ID,
+//     client_secret: CLIENT_SECRET,
+//     redirect_uri: REDIRECT_URI,
+//     refresh_token: refreshTokenStore[userId],
+//   };
+//   return await exchangeForTokens(userId, refreshTokenProof);
+// };
+
+// const refreshAccessToken = async (userId) => {
+//   const user = await getUserById(userId);
+//   const refreshTokenProof = {
+//     grant_type: 'refresh_token',
+//     client_id: CLIENT_ID,
+//     client_secret: CLIENT_SECRET,
+//     redirect_uri: REDIRECT_URI,
+//     refresh_token: user.appAuths[].refreshToken,
+//   };
+//   return await exchangeForTokens(userId, refreshTokenProof);
+// };
 
 const getAccessToken = async (userId) => {
   // If the access token has expired, retrieve
@@ -187,5 +199,4 @@ module.exports = {
   getAccessToken,
   getContact,
   isAuthorized,
-  refreshTokenStore,
 };
