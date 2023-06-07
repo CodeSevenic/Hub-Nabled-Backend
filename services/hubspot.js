@@ -51,6 +51,7 @@ const handleInstall = async (req, res) => {
   console.log("===>Step 1: Redirecting user to your app's OAuth URL");
   // Get the userId from the query parameter
   const userId = req.query.userId;
+
   console.log('userId: ', userId);
 
   const authUrl =
@@ -76,7 +77,6 @@ const handleOauthCallback = async (req, res) => {
   const userId = req.query.state;
   const appName = req.session.appName;
   const appId = req.session.appId;
-  req.session.userId = userId;
 
   if (appName && appId) {
     console.log('appId from session: ', appName);
@@ -180,13 +180,6 @@ const getContact = async (accessToken) => {
     return JSON.parse(e.response.body);
   }
 };
-// const isAuthorized = (userId) => {
-//   if (!userId) {
-//     console.error('Error: userId is undefined');
-//     return false;
-//   }
-//   return refreshTokenStore[userId] ? true : false;
-// };
 
 const isAuthorized = async (userId) => {
   if (!userId) {

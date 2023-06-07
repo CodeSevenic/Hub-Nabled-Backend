@@ -1,19 +1,29 @@
-﻿const { getAccessToken, getContact } = require('../services/hubspot');
+﻿const { getAccessToken, getContact, isAuthorized } = require('../services/hubspot');
 
 exports.contacts = async (req, res) => {
-  const userId = req.session.userId;
+  const sessionData = req.sessionStore.sessions;
+  console.log('Req session ID: ', req.sessionID);
+  console.log('userId: ', req.session.userId);
+  // console.log('Req: ', sessionData);
+  // console.log('Req sessionId: ', req.session.id);
+  // const { userId } = req.session;
 
-  console.log('Contacts userId: ', userId);
+  // console.log('Contact userId: ', userId);
 
-  const hardCodedID = '1685968763573-bff90ed5-087d-479c-a8a8-0f17a3b186e0';
+  // const authorized = await isAuthorized(userId);
 
-  const accessToken = await getAccessToken(hardCodedID);
-  //assuming getContacts is a function that gets all contacts
-  const contacts = await getContact(accessToken);
-  const formattedContacts = contacts.map((contact) => {
-    const { firstname, lastname } = contact.properties;
-    return { firstname: firstname.value, lastname: lastname.value };
-  });
-  console.log('formattedContacts: ', formattedContacts);
-  res.json(formattedContacts);
+  // if (authorized) {
+
+  //   const accessToken = await getAccessToken(userId);
+
+  //   const contacts = await getContact(accessToken);
+
+  //   console.log('Contact: ', contacts);
+  //   res.json(contacts);
+  // } else {
+  //   console.log('User is not authorized');
+  //   res.status(401).json({
+  //     message: 'You are not authorized',
+  //   });
+  // }
 };

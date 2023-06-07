@@ -1,6 +1,7 @@
 ﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
 const { db } = require('../firebase/firebaseAdmin');
+const { isAuthorized, getAccessToken, getContact } = require('../services/hubspot');
 
 // function for user registration API
 
@@ -72,6 +73,14 @@ exports.login = async (req, res) => {
     if (isValidPassword) {
       // If both conditions are met, the user is considered logged in
       console.log('Login successfully');
+
+      // save userId to the session
+      req.session.userId = userData.userId;
+
+      const sessionUserId = req.session.userId;
+      console.log('sessionUserId: ', sessionUserId);
+      console.log('SessionID: ', req.sessionID);
+
       res.status(200).json({
         message: 'User logged in successfully',
         userId: userData.userId,
