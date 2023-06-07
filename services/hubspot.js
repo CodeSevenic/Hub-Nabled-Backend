@@ -1,7 +1,7 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
 const NodeCache = require('node-cache');
-const { db, storeUserAppAuth } = require('../firebase/firebaseAdmin');
+const { db, storeUserAppAuth, getAppByName } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 
@@ -16,22 +16,6 @@ const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
 // Build the authorization URL to redirect a user
 // to when they choose to install the app
-
-const getAppByName = async (appName) => {
-  try {
-    const doc = await db.collection('apps').doc(appName).get();
-
-    if (!doc.exists) {
-      console.log('No such document!');
-    } else {
-      console.log('Document data:', doc.data());
-      return doc.data();
-    }
-  } catch (error) {
-    // In case of any other errors, return a server error status
-    console.error(error);
-  }
-};
 
 // Redirect the user from the installation page to
 // the authorization URL
