@@ -1,7 +1,7 @@
 ﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
 const { db, getUserByEmail, getUserById, getAppTokens } = require('../firebase/firebaseAdmin');
-const { isAuthorized, getAccessToken, getContact } = require('../services/hubspot');
+const { getAccessToken, getContact } = require('../services/hubspot');
 
 // function for user registration API
 
@@ -62,6 +62,17 @@ exports.login = async (req, res) => {
 
       // save userId to the session
       req.session.userId = userData.userId;
+
+      const user = await getUserById(userData.userId);
+
+      // check if user and user.appAuths are both defined
+      if (!user || !user.appAuths || Object.keys(user.appAuths).length === 0) {
+        req.session.hasApp = false;
+        console.log('No app found');
+      } else {
+        req.session.hasApp = true;
+        console.log('App found');
+      }
 
       console.log('SessionID: ', req.sessionID);
 

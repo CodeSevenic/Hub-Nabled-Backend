@@ -115,6 +115,9 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
     });
 
     const tokens = JSON.parse(responseBody);
+
+    console.log('tokens: ', tokens);
+
     // store user app auth by updating the user document in Firebase
     storeUserAppAuth(userId, appId, tokens);
 
@@ -158,18 +161,22 @@ const refreshAccessToken = async (userId) => {
 };
 
 const getAccessToken = async (userId) => {
-  const user = await getUserById(userId);
-  // get the app names from the user document
-  let appNames = Object.keys(user.appAuths);
-  // get the first app name
-  const appToken = getAppTokens(user.appAuths, appNames[0]);
-  // If the access token has expired, retrieve
-  // a new one using the refresh token
-  if (!appToken.accessToken) {
-    console.log('Refreshing expired access token');
-    await refreshAccessToken(userId);
+  try {
+    const user = await getUserById(userId);
+    // get the app names from the user document
+    let appNames = Object.keys(user.appAuths);
+    // get the first app name
+    const appToken = getAppTokens(user.appAuths, appNames[0]);
+    // If the access token has expired, retrieve
+    // a new one using the refresh token
+    if (!appToken.accessToken) {
+      console.log('Refreshing expired access token');
+      await refreshAccessToken(userId);
+    }
+    return appToken.accessToken;
+  } catch (e) {
+    console.error('Error getting accessToken: ', e);
   }
-  return appToken.accessToken;
 };
 
 const getContact = async (accessToken) => {
@@ -193,20 +200,23 @@ const getContact = async (accessToken) => {
   }
 };
 
-const isAuthorized = async (userId) => {
+const isAuthorized = async (userId, hasApp) => {
   if (!userId) {
-    console.error('Error: userId is undefined');
+    console.error('No user id found');
     return false;
   }
+  try {
+    // Check if the user is authorized by querying Firestore
+    const userDoc = await db.collection('users').doc(userId).get();
 
-  // Check if the user is authorized by querying Firestore
-  const userDoc = await db.collection('users').doc(userId).get();
-
-  if (userDoc.exists) {
-    console.log(`Document with id ${userDoc.id} exists`);
-    return true;
-  } else {
-    return false;
+    if (userDoc.exists && hasApp) {
+      console.log(`Document with id ${userDoc.id} exists`);
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.error('Error checking if user is authorized: ', e);
   }
 };
 

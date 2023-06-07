@@ -57,6 +57,7 @@ const getAppByName = async (appName) => {
 
 // Get user by document ID
 const getUserById = async (userId) => {
+  // console.log('getUserById: ', userId);
   try {
     const doc = await db.collection('users').doc(userId).get();
     if (!doc.exists) {
