@@ -132,17 +132,6 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
   }
 };
 
-// const refreshAccessToken = async (userId) => {
-//   const refreshTokenProof = {
-//     grant_type: 'refresh_token',
-//     client_id: CLIENT_ID,
-//     client_secret: CLIENT_SECRET,
-//     redirect_uri: REDIRECT_URI,
-//     refresh_token: refreshTokenStore[userId],
-//   };
-//   return await exchangeForTokens(userId, refreshTokenProof);
-// };
-
 const refreshAccessToken = async (userId) => {
   const user = await getUserById(userId);
   // get the app names from the user document
