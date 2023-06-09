@@ -116,9 +116,6 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
     // store user app auth by updating the user document in Firebase
     await storeUserAppAuth(userId, appId, tokens, issuedAt);
 
-    // refreshTokenStore[userId] = tokens.refresh_token;
-    // accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
-
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
   } catch (e) {
