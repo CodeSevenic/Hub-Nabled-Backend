@@ -29,6 +29,7 @@ const handleInstall = async (req, res) => {
   req.session.appName = appName;
   // get the app by name from Firebase
   const app = await getAppByName(appName);
+  console.log('app: ', app);
   // save the app id to the session
   req.session.appId = app.appId;
 

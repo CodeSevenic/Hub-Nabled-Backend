@@ -5,7 +5,7 @@ const { db, getUserByEmail, getUserById, getAppTokens } = require('../firebase/f
 // function for user registration API
 exports.register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
     // Check if the email already exists in the database
     const userDocRef = db.doc(`users/${email}`);
@@ -26,6 +26,7 @@ exports.register = async (req, res) => {
 
     // Save user info
     await db.collection('users').doc(userId).set({
+      username: username,
       userId: userId,
       email: email,
       password: hashedPassword,
