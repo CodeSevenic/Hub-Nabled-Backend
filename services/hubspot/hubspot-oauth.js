@@ -1,15 +1,16 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
+const axios = require('axios');
 const {
   db,
   storeUserAppAuth,
   getAppByName,
   getUserById,
   getAppTokens,
-} = require('../firebase/firebaseAdmin');
+} = require('../../firebase/firebaseAdmin');
 
-const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
-const { generateExpiryTimestamp, isTokenExpired } = require('../utils/time-stamps');
+const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../../config');
+const { generateExpiryTimestamp, isTokenExpired } = require('../../utils/time-stamps');
 
 //================================//
 //   Running the OAuth 2.0 Flow   //
@@ -169,26 +170,6 @@ const getAccessToken = async (userId) => {
   }
 };
 
-const getContact = async (accessToken) => {
-  console.log('=== Retrieving a contact from HubSpot using the access token ===');
-  try {
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
-    const result = await request.get(
-      'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?count=1',
-      {
-        headers: headers,
-      }
-    );
-
-    return JSON.parse(result).contacts[0];
-  } catch (e) {
-    console.error('  >Unable to retrieve contact');
-    return JSON.parse(e.response.body);
-  }
-};
 // check if the user is authorized and has an app
 const isAuthorized = async (userId, hasApp) => {
   if (!userId) {
@@ -214,6 +195,5 @@ module.exports = {
   handleInstall,
   handleOauthCallback,
   getAccessToken,
-  getContact,
   isAuthorized,
 };
