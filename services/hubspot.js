@@ -149,7 +149,9 @@ const refreshAccessToken = async (userId) => {
     redirect_uri: REDIRECT_URI,
     refresh_token: appToken.refreshToken,
   };
-  return await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
+  const newAccessToken = await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
+  console.log('New access token: ', newAccessToken);
+  return newAccessToken;
 };
 
 const getAccessToken = async (userId) => {
@@ -163,7 +165,9 @@ const getAccessToken = async (userId) => {
     // a new one using the refresh token
     if (isTokenExpired(appToken.issuedAt)) {
       console.log('Refreshing expired access token');
-      await refreshAccessToken(userId);
+      const newAccessToken = await refreshAccessToken(userId);
+      console.log('New access token in getAccessToken: ', newAccessToken);
+      return newAccessToken;
     }
     console.log('Token has not expired');
     return appToken.accessToken;

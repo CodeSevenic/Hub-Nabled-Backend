@@ -11,7 +11,7 @@ exports.contacts = async (req, res) => {
 
     const contacts = await getContact(accessToken);
 
-    console.log('Contact: ', contacts);
+    console.log('Contact: ', contacts.properties);
     res.json(contacts.properties);
   } else {
     console.log('User is not authorized or has not installed an app');
