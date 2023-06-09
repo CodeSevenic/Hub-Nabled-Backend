@@ -1,6 +1,5 @@
 ﻿const dotenv = require('dotenv');
 const request = require('request-promise-native');
-const NodeCache = require('node-cache');
 const {
   db,
   storeUserAppAuth,
@@ -10,11 +9,7 @@ const {
 } = require('../firebase/firebaseAdmin');
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
-const { app } = require('firebase-admin');
 const { generateExpiryTimestamp, isTokenExpired } = require('../utils/time-stamps');
-
-const refreshTokenStore = {};
-const accessTokenCache = new NodeCache({ deleteOnExpire: true });
 
 //================================//
 //   Running the OAuth 2.0 Flow   //
@@ -150,7 +145,6 @@ const refreshAccessToken = async (userId) => {
     refresh_token: appToken.refreshToken,
   };
   const newAccessToken = await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
-  console.log('New access token: ', newAccessToken);
   return newAccessToken;
 };
 
@@ -166,7 +160,6 @@ const getAccessToken = async (userId) => {
     if (isTokenExpired(appToken.issuedAt)) {
       console.log('Refreshing expired access token');
       const newAccessToken = await refreshAccessToken(userId);
-      console.log('New access token in getAccessToken: ', newAccessToken);
       return newAccessToken;
     }
     console.log('Token has not expired');
@@ -196,7 +189,7 @@ const getContact = async (accessToken) => {
     return JSON.parse(e.response.body);
   }
 };
-
+// check if the user is authorized and has an app
 const isAuthorized = async (userId, hasApp) => {
   if (!userId) {
     console.error('No user id found');
