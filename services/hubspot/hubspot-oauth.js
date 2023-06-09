@@ -7,7 +7,7 @@ const {
   getAppTokens,
 } = require('../../firebase/firebaseAdmin');
 
-const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../../config');
+const { REDIRECT_URI } = require('../../config');
 const { generateExpiryTimestamp, isTokenExpired } = require('../../utils/time-stamps');
 const { app } = require('firebase-admin');
 
