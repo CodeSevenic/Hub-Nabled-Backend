@@ -1,10 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-const {
-  authUrl,
-  handleInstall,
-  handleOauthCallback,
-} = require('../services/hubspot/hubspot-oauth');
+const { handleInstall, handleOauthCallback } = require('../services/hubspot');
 const { register, login } = require('../controllers/auth');
 const { contacts } = require('../controllers/contacts');
 
