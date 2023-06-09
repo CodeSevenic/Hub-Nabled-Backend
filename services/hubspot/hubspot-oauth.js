@@ -9,6 +9,7 @@ const {
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../../config');
 const { generateExpiryTimestamp, isTokenExpired } = require('../../utils/time-stamps');
+const { app } = require('firebase-admin');
 
 //================================//
 //   Running the OAuth 2.0 Flow   //
@@ -29,6 +30,15 @@ const handleInstall = async (req, res) => {
   req.session.appName = appName;
   // get the app by name from Firebase
   const app = await getAppByName(appName);
+  // save the app credentials to the session
+  const clientId = app.clientId;
+  const clientSecret = app.clientSecret;
+  const scopes = app.scopes.split(/ |, ?|%20/).join(' ');
+  // save the app credentials to the session
+  req.session.clientId = clientId;
+  req.session.clientSecret = clientSecret;
+  req.session.scopes = scopes;
+
   console.log('app: ', app);
   // save the app id to the session
   req.session.appId = app.appId;
@@ -42,8 +52,8 @@ const handleInstall = async (req, res) => {
 
   const authUrl =
     'https://app.hubspot.com/oauth/authorize' +
-    `?client_id=${encodeURIComponent(CLIENT_ID)}` +
-    `&scope=${encodeURIComponent(SCOPES)}` +
+    `?client_id=${encodeURIComponent(clientId)}` +
+    `&scope=${encodeURIComponent(scopes)}` +
     `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
     `&state=${encodeURIComponent(userId)}`;
   res.redirect(authUrl);
@@ -63,6 +73,9 @@ const handleOauthCallback = async (req, res) => {
   const userId = req.query.state;
   const appName = req.session.appName;
   const appId = req.session.appId;
+  // Get the app credentials from the session
+  const clientId = req.session.clientId;
+  const clientSecret = req.session.clientSecret;
 
   if (appName && appId) {
     console.log('appId from session: ', appName);
@@ -79,15 +92,21 @@ const handleOauthCallback = async (req, res) => {
 
     const authCodeProof = {
       grant_type: 'authorization_code',
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       redirect_uri: REDIRECT_URI,
       code: req.query.code,
     };
 
+    const appSecrets = {
+      clientId: req.session.clientId,
+      clientSecret: req.session.clientSecret,
+      scopes: req.session.scopes,
+    };
+
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const tokens = await exchangeForTokens(userId, authCodeProof, appId);
+    const tokens = await exchangeForTokens(userId, authCodeProof, appId, appSecrets);
 
     if (tokens.message) {
       return res.redirect(`/error?msg=${tokens.message}`);
@@ -104,7 +123,7 @@ const handleOauthCallback = async (req, res) => {
 };
 
 // Exchanging Proof for an Access Token and Refresh Token
-const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
+const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
   try {
     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
       form: exchangeProof,
@@ -115,7 +134,7 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
     // store user app auth by updating the user document in Firebase
-    await storeUserAppAuth(userId, appId, tokens, issuedAt);
+    await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields);
 
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
@@ -133,11 +152,12 @@ const refreshAccessToken = async (userId) => {
   const appToken = getAppTokens(user.appAuths, appNames[0]);
 
   console.log('Refresh token: ', appToken.refreshToken);
+  console.log('clientSecret: ', appToken.clientSecret);
 
   const refreshTokenProof = {
     grant_type: 'refresh_token',
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
+    client_id: appToken.clientId,
+    client_secret: appToken.clientSecret,
     redirect_uri: REDIRECT_URI,
     refresh_token: appToken.refreshToken,
   };
