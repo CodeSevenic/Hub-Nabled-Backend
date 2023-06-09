@@ -1,4 +1,6 @@
-﻿const getContacts = async (accessToken) => {
+﻿const { default: axios } = require('axios');
+
+const getContacts = async (accessToken) => {
   console.log('=== Retrieving all contacts from HubSpot using the access token ===');
 
   let after = '';
