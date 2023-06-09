@@ -1,4 +1,4 @@
-﻿const { getAccessToken, isAuthorized } = require('../services/hubspot');
+﻿const { getAccessToken, isAuthorized, getContacts } = require('../services/hubspot');
 
 exports.contacts = async (req, res) => {
   const userId = req.session.userId;
