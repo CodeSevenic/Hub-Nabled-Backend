@@ -3,8 +3,6 @@
 exports.contacts = async (req, res) => {
   const userId = req.session.userId;
   const hasApp = req.session.hasApp;
-  console.log('Contact userId: ', userId);
-  console.log('Contact hasApp: ', hasApp);
 
   const authorized = await isAuthorized(userId, hasApp);
 
@@ -14,7 +12,7 @@ exports.contacts = async (req, res) => {
     const contacts = await getContact(accessToken);
 
     console.log('Contact: ', contacts);
-    res.json(contacts);
+    res.json(contacts.properties);
   } else {
     console.log('User is not authorized or has not installed an app');
     res.status(401).json({

@@ -9,7 +9,8 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // Store authentications under a user account
-const storeUserAppAuth = async (userId, appId, tokens) => {
+const storeUserAppAuth = async (userId, appId, tokens, issuedAt) => {
+  console.log('storeUserAppAuth Running...');
   // Get the user document reference
   const userDoc = db.doc(`users/${userId}`);
 
@@ -18,23 +19,25 @@ const storeUserAppAuth = async (userId, appId, tokens) => {
   if (docSnapshot.exists) {
     const userData = docSnapshot.data();
 
-    // If appId already exists, skip the rest of the logic
-    if (userData.appAuths && userData.appAuths[appId]) {
-      console.log(`       > App ${appId} already exists for user ${userId}`);
-      return;
-    }
+    // Create or update 'appAuths' object
+    let appAuths = userData.appAuths || {};
 
-    // Create an 'appAuths' object to store the tokens.
-    const appAuths = {
-      [appId]: {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        expiresIn: tokens.expires_in,
-      },
+    // Update the 'appAuths' object with new or existing appId
+    appAuths[appId] = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      expiresIn: tokens.expires_in,
+      issuedAt: issuedAt,
     };
 
     // If the document exists, update it with the 'appAuths' object.
     await userDoc.set({ appAuths }, { merge: true });
+
+    if (userData.appAuths && userData.appAuths[appId]) {
+      console.log(`       > App ${appId} updated for user ${userId}`);
+    } else {
+      console.log(`       > App ${appId} added to user ${userId}`);
+    }
   }
 };
 

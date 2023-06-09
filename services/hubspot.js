@@ -11,6 +11,7 @@ const {
 
 const { CLIENT_ID, CLIENT_SECRET, SCOPES, PORT, REDIRECT_URI } = require('../config');
 const { app } = require('firebase-admin');
+const { generateExpiryTimestamp, isTokenExpired } = require('../utils/time-stamps');
 
 const refreshTokenStore = {};
 const accessTokenCache = new NodeCache({ deleteOnExpire: true });
@@ -116,10 +117,10 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '') => {
 
     const tokens = JSON.parse(responseBody);
 
-    console.log('tokens: ', tokens);
+    const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
     // store user app auth by updating the user document in Firebase
-    storeUserAppAuth(userId, appId, tokens);
+    await storeUserAppAuth(userId, appId, tokens, issuedAt);
 
     // refreshTokenStore[userId] = tokens.refresh_token;
     // accessTokenCache.set(userId, tokens.access_token, Math.round(tokens.expires_in * 0.75));
@@ -139,6 +140,8 @@ const refreshAccessToken = async (userId) => {
   // get the first app name
   const appToken = getAppTokens(user.appAuths, appNames[0]);
 
+  console.log('Refresh token: ', appToken.refreshToken);
+
   const refreshTokenProof = {
     grant_type: 'refresh_token',
     client_id: CLIENT_ID,
@@ -146,7 +149,7 @@ const refreshAccessToken = async (userId) => {
     redirect_uri: REDIRECT_URI,
     refresh_token: appToken.refreshToken,
   };
-  return await exchangeForTokens(userId, refreshTokenProof);
+  return await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
 };
 
 const getAccessToken = async (userId) => {
@@ -158,10 +161,11 @@ const getAccessToken = async (userId) => {
     const appToken = getAppTokens(user.appAuths, appNames[0]);
     // If the access token has expired, retrieve
     // a new one using the refresh token
-    if (!appToken.accessToken) {
+    if (isTokenExpired(appToken.issuedAt)) {
       console.log('Refreshing expired access token');
       await refreshAccessToken(userId);
     }
+    console.log('Token has not expired');
     return appToken.accessToken;
   } catch (e) {
     console.error('Error getting accessToken: ', e);
