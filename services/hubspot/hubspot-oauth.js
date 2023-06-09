@@ -1,6 +1,4 @@
-﻿const dotenv = require('dotenv');
-const request = require('request-promise-native');
-const axios = require('axios');
+﻿const request = require('request-promise-native');
 const {
   db,
   storeUserAppAuth,
