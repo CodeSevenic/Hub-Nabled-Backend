@@ -89,6 +89,14 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.isLoggedIn = async (req, res) => {
+  if (req.session.userEmail) {
+    res.status(200).json({ isLoggedIn: true, message: 'User is logged in' });
+  } else {
+    res.status(401).json({ isLoggedIn: false, message: 'User is not logged in' });
+  }
+};
+
 exports.logout = async (req, res) => {
   req.session.destroy(function (err) {
     if (err) {
