@@ -88,3 +88,15 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'User login failed', error: error.message });
   }
 };
+
+exports.logout = async (req, res) => {
+  req.session.destroy(function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Logout successfully');
+      req.session = null;
+      res.redirect('/');
+    }
+  });
+};
