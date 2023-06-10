@@ -76,7 +76,6 @@ exports.login = async (req, res) => {
       res.status(200).json({
         message: 'User logged in successfully',
         userId: userData.userId,
-        email,
         isAdmin: userData.isAdmin,
       });
     } else {
