@@ -17,6 +17,4 @@ router.get('/contacts', contacts);
 // API route for user logout
 router.post('/logout', logout);
 
-router.get('/isloggedin', isLoggedIn);
-
 module.exports = router;
