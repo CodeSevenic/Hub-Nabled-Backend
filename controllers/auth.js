@@ -76,12 +76,14 @@ exports.login = async (req, res) => {
       res.status(200).json({
         message: 'User logged in successfully',
         userId: userData.userId,
-        isAdmin: userData.isAdmin,
+        isAdmin: userData.isAdmin ? userData.isAdmin : false,
+        isLoggedIn: true,
+        username: userData.username,
       });
     } else {
       console.log('Login Failed');
       // If either condition is not met, return an error message
-      res.status(401).json({ message: 'Invalid email or password' });
+      res.status(401).json({ message: 'Invalid email or password', isLoggedIn: false });
     }
   } catch (error) {
     res.status(500).json({ message: 'User login failed', error: error.message });
