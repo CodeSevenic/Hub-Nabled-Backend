@@ -26,16 +26,16 @@ app.use(
     saveUninitialized: true,
     cookie: {
       secure: false,
-      maxAge: 1000 * 60 * 60 * 24,
-    }, // 1 day
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
   })
 );
 
 // API routes
 const apps = require('./routes/apps');
 const authRoutes = require('./routes/auth');
-const contactsRoutes = require('./routes/contacts');
-const { getUserById } = require('./firebase/firebaseAdmin');
+// const contactsRoutes = require('./routes/contacts');
+// const { getUserById } = require('./firebase/firebaseAdmin');
 
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
