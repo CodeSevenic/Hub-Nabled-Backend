@@ -34,7 +34,7 @@ app.use(
 // API routes
 const apps = require('./routes/apps');
 const authRoutes = require('./routes/auth');
-// const contactsRoutes = require('./routes/contacts');
+const contactsRoutes = require('./routes/contacts');
 // const { getUserById } = require('./firebase/firebaseAdmin');
 
 app.use('/api/', authRoutes);
