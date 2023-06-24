@@ -36,8 +36,8 @@ const getContacts = async (accessToken) => {
         keepGoing = false;
       }
     } catch (e) {
-      console.error('Unable to retrieve contacts', e);
-      throw e;
+      console.error('Error Unable to retrieve contacts');
+      keepGoing = false;
     }
   }
 

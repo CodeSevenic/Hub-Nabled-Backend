@@ -151,18 +151,22 @@ const refreshAccessToken = async (userId) => {
   // get the first app name
   const appToken = getAppTokens(user.appAuths, appNames[0]);
 
-  console.log('Refresh token: ', appToken.refreshToken);
-  console.log('clientSecret: ', appToken.clientSecret);
+  try {
+    console.log('Refresh token: ', appToken.refreshToken);
+    console.log('clientSecret: ', appToken.clientSecret);
 
-  const refreshTokenProof = {
-    grant_type: 'refresh_token',
-    client_id: appToken.clientId,
-    client_secret: appToken.clientSecret,
-    redirect_uri: REDIRECT_URI,
-    refresh_token: appToken.refreshToken,
-  };
-  const newAccessToken = await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
-  return newAccessToken;
+    const refreshTokenProof = {
+      grant_type: 'refresh_token',
+      client_id: appToken.clientId,
+      client_secret: appToken.clientSecret,
+      redirect_uri: REDIRECT_URI,
+      refresh_token: appToken.refreshToken,
+    };
+    const newAccessToken = await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
+    return newAccessToken;
+  } catch (e) {
+    console.error('Error refreshing access token: ', e);
+  }
 };
 
 const getAccessToken = async (userId) => {

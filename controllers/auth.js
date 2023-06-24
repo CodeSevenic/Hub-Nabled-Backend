@@ -97,7 +97,7 @@ exports.logout = async (req, res) => {
     } else {
       console.log('Logout successfully');
       req.session = null;
-      res.redirect('/');
+      res.status(200).json({ message: 'User logged out successfully' });
     }
   });
 };
