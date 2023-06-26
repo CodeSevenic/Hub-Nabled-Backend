@@ -131,6 +131,8 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
 
     const tokens = JSON.parse(responseBody);
 
+    console.log('tokens: ', tokens);
+
     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
     // store user app auth by updating the user document in Firebase

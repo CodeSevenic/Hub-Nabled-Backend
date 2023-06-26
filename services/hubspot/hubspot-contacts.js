@@ -10,8 +10,6 @@ const getContacts = async (accessToken) => {
 
   let keepGoing = true;
 
-  let firstLoop = true;
-
   // Keep making requests until all contacts are retrieved
   while (keepGoing) {
     try {
@@ -28,11 +26,6 @@ const getContacts = async (accessToken) => {
       }
 
       const { data } = await axios.get(url, { headers });
-
-      if (firstLoop) {
-        console.log('Data console: ', data);
-        firstLoop = false;
-      }
 
       // Add the retrieved contacts to the 'allContacts' array
       allContacts = [...allContacts, ...data.results];
