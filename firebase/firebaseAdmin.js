@@ -9,7 +9,14 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // Store authentications under a user account
-const storeUserAppAuth = async (userId, appId, tokens, issuedAt, additionalFields = {}) => {
+const storeUserAppAuth = async (
+  userId,
+  appId,
+  tokens,
+  issuedAt,
+  portalInfo = {},
+  additionalFields = {}
+) => {
   console.log('storeUserAppAuth Running...');
   // Get the user document reference
   const userDoc = db.doc(`users/${userId}`);
@@ -29,6 +36,7 @@ const storeUserAppAuth = async (userId, appId, tokens, issuedAt, additionalField
       refreshToken: tokens.refresh_token,
       expiresIn: tokens.expires_in,
       issuedAt: issuedAt,
+      portalInfo: portalInfo,
     };
 
     // If the document exists, update it with the 'appAuths' object.

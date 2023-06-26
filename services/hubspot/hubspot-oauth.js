@@ -1,4 +1,5 @@
 ﻿const request = require('request-promise-native');
+const axios = require('axios');
 const {
   db,
   storeUserAppAuth,
@@ -123,17 +124,47 @@ const handleOauthCallback = async (req, res) => {
 };
 
 // Exchanging Proof for an Access Token and Refresh Token
+// const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
+//   try {
+//     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
+//       form: exchangeProof,
+//     });
+
+//     const tokens = JSON.parse(responseBody);
+
+//     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
+
+//     // store user app auth by updating the user document in Firebase
+//     await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields);
+
+//     console.log('       > Received an access token and refresh token');
+//     return tokens.access_token;
+//   } catch (e) {
+//     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
+//     return JSON.parse(e.response.body);
+//   }
+// };
+
 const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
   try {
-    const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
-      form: exchangeProof,
+    const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', exchangeProof, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     });
 
-    const tokens = JSON.parse(responseBody);
-
-    console.log('tokens: ', tokens);
+    const tokens = responseBody.data;
 
     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
+
+    // Get portal info
+    const portalInfo = await axios.get(
+      `https://api.hubapi.com/oauth/v1/access-tokens/${tokens.access_token}`
+    );
+
+    if (portalInfo.data) {
+      console.log(`HubSpot Portal ID: ${portalInfo.data.hub_id}`);
+    }
 
     // store user app auth by updating the user document in Firebase
     await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields);
@@ -141,8 +172,11 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
   } catch (e) {
-    console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
-    return JSON.parse(e.response.body);
+    console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`, e);
+    if (e.response && e.response.data) {
+      return e.response.data;
+    }
+    throw e;
   }
 };
 
