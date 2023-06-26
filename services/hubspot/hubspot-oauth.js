@@ -124,27 +124,6 @@ const handleOauthCallback = async (req, res) => {
 };
 
 // Exchanging Proof for an Access Token and Refresh Token
-// const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
-//   try {
-//     const responseBody = await request.post('https://api.hubapi.com/oauth/v1/token', {
-//       form: exchangeProof,
-//     });
-
-//     const tokens = JSON.parse(responseBody);
-
-//     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
-
-//     // store user app auth by updating the user document in Firebase
-//     await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields);
-
-//     console.log('       > Received an access token and refresh token');
-//     return tokens.access_token;
-//   } catch (e) {
-//     console.error(`       > Error exchanging ${exchangeProof.grant_type} for access token`);
-//     return JSON.parse(e.response.body);
-//   }
-// };
-
 const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
   try {
     const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', exchangeProof, {
@@ -166,8 +145,13 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
       console.log(`HubSpot Portal ID: ${portalInfo.data.hub_id}`);
     }
 
+    const extraInfo = {
+      additionalFields,
+      portalInfo: portalInfo.data,
+    };
+
     // store user app auth by updating the user document in Firebase
-    await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields);
+    await storeUserAppAuth(userId, appId, tokens, issuedAt, extraInfo);
 
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
