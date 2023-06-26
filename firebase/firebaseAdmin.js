@@ -14,8 +14,8 @@ const storeUserAppAuth = async (
   appId,
   tokens,
   issuedAt,
-  portalInfo = {},
-  additionalFields = {}
+  additionalFields = {},
+  appPortalInfo = {}
 ) => {
   console.log('storeUserAppAuth Running...');
   // Get the user document reference
@@ -36,7 +36,7 @@ const storeUserAppAuth = async (
       refreshToken: tokens.refresh_token,
       expiresIn: tokens.expires_in,
       issuedAt: issuedAt,
-      portalInfo: portalInfo,
+      ...appPortalInfo,
     };
 
     // If the document exists, update it with the 'appAuths' object.
