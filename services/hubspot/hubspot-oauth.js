@@ -137,21 +137,22 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
     // Get portal info
-    const portalInfo = await axios.get(
+    const tokenInfo = await axios.get(
       `https://api.hubapi.com/oauth/v1/access-tokens/${tokens.access_token}`
     );
 
-    if (portalInfo.data) {
-      console.log(`HubSpot Portal ID: ${portalInfo.data.hub_id}`);
+    if (tokenInfo.data) {
+      console.log(`HubSpot Portal ID: ${tokenInfo.data.hub_id}`);
     }
 
-    const extraInfo = {
-      additionalFields,
-      portalInfo: portalInfo.data,
+    const appPortalInfo = {
+      portalId: tokenInfo.data.hub_id,
+      hubDomain: tokenInfo.data.hub_domain,
+      hubUserEmail: tokenInfo.data.user,
     };
 
     // store user app auth by updating the user document in Firebase
-    await storeUserAppAuth(userId, appId, tokens, issuedAt, extraInfo);
+    await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields, appPortalInfo);
 
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
