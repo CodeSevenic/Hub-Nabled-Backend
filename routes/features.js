@@ -2,6 +2,6 @@
 const router = express.Router();
 const { featureToggle } = require('../controllers/features');
 
-router.get('/feature-toggle', featureToggle);
+router.post('/toggle-feature', featureToggle);
 
 module.exports = router;

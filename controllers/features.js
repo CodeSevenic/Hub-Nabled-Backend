@@ -3,6 +3,8 @@
 exports.featureToggle = async (req, res) => {
   const { userId, featureName, isEnabled } = req.body;
 
+  console.log('Request: ', req.body);
+
   try {
     if (isEnabled) {
       await enableFeature(userId, featureName);
