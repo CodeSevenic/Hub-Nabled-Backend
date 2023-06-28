@@ -53,6 +53,7 @@ exports.getUsersWithFeature = async (featureName) => {
     console.error(`Failed to get users with ${featureName} enabled: `, error.message);
   }
 };
+
 // Get a user with a feature enabled
 exports.getUserWithFeature = async (userId, featureName) => {
   try {
