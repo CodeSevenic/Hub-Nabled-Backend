@@ -35,11 +35,13 @@ app.use(
 const apps = require('./routes/apps');
 const authRoutes = require('./routes/auth');
 const contactsRoutes = require('./routes/contacts');
-const { getUserById } = require('./firebase/firebaseAdmin');
+const featuresRoutes = require('./routes/features');
+// const { getUserById } = require('./firebase/firebaseAdmin');
 
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
 app.use('/api/', contactsRoutes);
+app.use('/api/', featuresRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);
