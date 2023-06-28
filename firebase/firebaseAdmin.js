@@ -11,7 +11,7 @@ const db = admin.firestore();
 // Store authentications under a user account
 const storeUserAppAuth = async (
   userId,
-  appId,
+  portalId,
   tokens,
   issuedAt,
   additionalFields = {},
@@ -29,8 +29,8 @@ const storeUserAppAuth = async (
     // Create or update 'appAuths' object
     let appAuths = userData.appAuths || {};
 
-    // Update the 'appAuths' object with new or existing appId
-    appAuths[appId] = {
+    // Update the 'appAuths' object with new or existing portalId
+    appAuths[portalId] = {
       ...additionalFields,
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
@@ -42,10 +42,10 @@ const storeUserAppAuth = async (
     // If the document exists, update it with the 'appAuths' object.
     await userDoc.set({ appAuths }, { merge: true });
 
-    if (userData.appAuths && userData.appAuths[appId]) {
-      console.log(`       > App ${appId} updated for user ${userId}`);
+    if (userData.appAuths && userData.appAuths[portalId]) {
+      console.log(`       > App ${portalId} updated for user ${userId}`);
     } else {
-      console.log(`       > App ${appId} added to user ${userId}`);
+      console.log(`       > App ${portalId} added to user ${userId}`);
     }
   }
 };
@@ -104,17 +104,23 @@ const getUserByEmail = async (email) => {
   }
 };
 
+// This function takes in a user's apps object and an optional app name parameter
+// If an app name is provided, it returns the tokens for that app
+// Otherwise, it returns an array of all the app tokens
 const getAppTokens = (userApps, appName = undefined) => {
   let values = [];
 
   if (appName) {
+    // If an app name is provided, return the tokens for that app
     return userApps[appName];
   } else {
+    // Otherwise, loop through all the apps and push their tokens to the values array
     for (let key in userApps) {
       if (userApps.hasOwnProperty(key)) {
         values.push(userApps[key]);
       }
     }
+    // Return the array of app tokens
     return values;
   }
 };

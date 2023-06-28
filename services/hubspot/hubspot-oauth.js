@@ -107,7 +107,7 @@ const handleOauthCallback = async (req, res) => {
 
     // Exchange the authorization code for an access token and refresh token
     console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const tokens = await exchangeForTokens(userId, authCodeProof, appId, appSecrets);
+    const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
 
     if (tokens.message) {
       return res.redirect(`/error?msg=${tokens.message}`);
@@ -124,7 +124,7 @@ const handleOauthCallback = async (req, res) => {
 };
 
 // Exchanging Proof for an Access Token and Refresh Token
-const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFields = {}) => {
+const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) => {
   try {
     const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', exchangeProof, {
       headers: {
@@ -136,14 +136,10 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
 
     const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
-    // Get portal info
+    // Get HubSpot portal info
     const tokenInfo = await axios.get(
       `https://api.hubapi.com/oauth/v1/access-tokens/${tokens.access_token}`
     );
-
-    if (tokenInfo.data) {
-      console.log(`HubSpot Portal ID: ${tokenInfo.data.hub_id}`);
-    }
 
     const appPortalInfo = {
       portalId: tokenInfo.data.hub_id,
@@ -152,7 +148,14 @@ const exchangeForTokens = async (userId, exchangeProof, appId = '', additionalFi
     };
 
     // store user app auth by updating the user document in Firebase
-    await storeUserAppAuth(userId, appId, tokens, issuedAt, additionalFields, appPortalInfo);
+    await storeUserAppAuth(
+      userId,
+      appPortalInfo.portalId,
+      tokens,
+      issuedAt,
+      additionalFields,
+      appPortalInfo
+    );
 
     console.log('       > Received an access token and refresh token');
     return tokens.access_token;
@@ -173,9 +176,6 @@ const refreshAccessToken = async (userId) => {
   const appToken = getAppTokens(user.appAuths, appNames[0]);
 
   try {
-    console.log('Refresh token: ', appToken.refreshToken);
-    console.log('clientSecret: ', appToken.clientSecret);
-
     const refreshTokenProof = {
       grant_type: 'refresh_token',
       client_id: appToken.clientId,
@@ -183,7 +183,9 @@ const refreshAccessToken = async (userId) => {
       redirect_uri: REDIRECT_URI,
       refresh_token: appToken.refreshToken,
     };
-    const newAccessToken = await exchangeForTokens(userId, refreshTokenProof, appNames[0]);
+
+    const newAccessToken = await exchangeForTokens(userId, refreshTokenProof);
+
     return newAccessToken;
   } catch (e) {
     console.error('Error refreshing access token: ', e);
