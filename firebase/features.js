@@ -88,3 +88,22 @@ exports.getUserFeatures = async (userId) => {
     console.error(`Failed to get features for user ${userId}: `, error.message);
   }
 };
+// Get all features for a user
+exports.getUserFeatures = async (userId) => {
+  try {
+    const doc = await db.collection('users').doc(userId).get();
+    if (!doc.exists) {
+      console.log(`User ${userId} does not exist.`);
+      return;
+    }
+
+    const user = doc.data();
+    if (user.features) {
+      console.log(`Features for user ${userId}: `, user.features);
+    } else {
+      console.log(`User ${userId} has no features.`);
+    }
+  } catch (error) {
+    console.error(`Failed to get features for user ${userId}: `, error.message);
+  }
+};
