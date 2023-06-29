@@ -2,39 +2,84 @@
 
 // ======= User Features ======= //
 
+// // Enable a feature for a user
+// exports.enableFeature = async (userId, featureName) => {
+//   try {
+//     // Update the user document with the enabled feature
+//     await db
+//       .collection('users')
+//       .doc(userId)
+//       .update({
+//         [`features.${featureName}`]: true,
+//       });
+
+//     console.log(`Feature ${featureName} enabled for user ${userId}`);
+//   } catch (error) {
+//     console.error(`Failed to enable feature ${featureName} for user ${userId}: `, error.message);
+//   }
+// };
+
+// // Disable a feature for a user
+// exports.disableFeature = async (userId, featureName) => {
+//   try {
+//     // Update the user document with the disabled feature
+//     await db
+//       .collection('users')
+//       .doc(userId)
+//       .update({
+//         [`features.${featureName}`]: false,
+//       });
+
+//     console.log(`Feature ${featureName} disabled for user ${userId}`);
+//   } catch (error) {
+//     console.error(`Failed to disable feature ${featureName} for user ${userId}: `, error.message);
+//   }
+// };
+
 // Enable a feature for a user
-exports.enableFeature = async (userId, featureName) => {
+exports.enableFeature = async (userId, hubspotId, featureName) => {
   try {
     // Update the user document with the enabled feature
     await db
       .collection('users')
       .doc(userId)
       .update({
-        [`features.${featureName}`]: true,
+        [`appAuths.${hubspotId}.features.${featureName}`]: true,
       });
 
-    console.log(`Feature ${featureName} enabled for user ${userId}`);
+    console.log(
+      `Feature ${featureName} enabled for user ${userId} in hubspot account ${hubspotId}`
+    );
   } catch (error) {
-    console.error(`Failed to enable feature ${featureName} for user ${userId}: `, error.message);
+    console.error(
+      `Failed to enable feature ${featureName} for user ${userId} in hubspot account ${hubspotId}: `,
+      error.message
+    );
   }
 };
 
 // Disable a feature for a user
-exports.disableFeature = async (userId, featureName) => {
+exports.disableFeature = async (userId, hubspotId, featureName) => {
   try {
     // Update the user document with the disabled feature
     await db
       .collection('users')
       .doc(userId)
       .update({
-        [`features.${featureName}`]: false,
+        [`appAuths.${hubspotId}.features.${featureName}`]: false,
       });
 
-    console.log(`Feature ${featureName} disabled for user ${userId}`);
+    console.log(
+      `Feature ${featureName} disabled for user ${userId} in hubspot account ${hubspotId}`
+    );
   } catch (error) {
-    console.error(`Failed to disable feature ${featureName} for user ${userId}: `, error.message);
+    console.error(
+      `Failed to disable feature ${featureName} for user ${userId} in hubspot account ${hubspotId}: `,
+      error.message
+    );
   }
 };
+
 // Get all users with a feature enabled
 exports.getUsersWithFeature = async (featureName) => {
   try {

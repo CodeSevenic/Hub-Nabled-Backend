@@ -79,6 +79,8 @@ exports.login = async (req, res) => {
         isAdmin: userData.isAdmin ? userData.isAdmin : false,
         isLoggedIn: true,
         username: userData.username,
+        appAuths: user.appAuths ? user.appAuths : {},
+        features: user.features ? user.features : {},
       });
     } else {
       console.log('Login Failed');
