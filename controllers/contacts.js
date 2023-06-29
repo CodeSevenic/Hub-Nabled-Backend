@@ -7,7 +7,7 @@ exports.contacts = async (req, res) => {
 
   console.log('Portal ID: ', portalId);
 
-  const authorized = await isAuthorized(userId, hasApp);
+  const authorized = await isAuthorized(userId, portalId);
   console.log('Authorized: ', authorized);
 
   if (authorized) {
