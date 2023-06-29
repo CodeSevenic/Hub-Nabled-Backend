@@ -2,20 +2,18 @@
 
 exports.contacts = async (req, res) => {
   const userId = req.session.userId;
-  const hasApp = req.session.hasApp;
 
-  console.log('User ID: ', userId);
-  console.log('Has App: ', hasApp);
+  const portalId = req.params.portalId ? req.params.portalId : req.session.portalId;
+
+  console.log('Portal ID: ', portalId);
 
   const authorized = await isAuthorized(userId, hasApp);
   console.log('Authorized: ', authorized);
 
   if (authorized) {
-    const accessToken = await getAccessToken(userId);
+    const accessToken = await getAccessToken(userId, portalId);
 
     const contacts = await getContacts(accessToken);
-
-    // console.log('Contact: ', contacts);
 
     res.json(contacts);
   } else {

@@ -214,7 +214,7 @@ const getAccessToken = async (userId, portalId) => {
 };
 
 // check if the user is authorized and has an app
-const isAuthorized = async (userId, hasApp) => {
+const isAuthorized = async (userId, portalId) => {
   if (!userId) {
     console.error('No user id found');
     return false;
@@ -223,7 +223,7 @@ const isAuthorized = async (userId, hasApp) => {
     // Check if the user is authorized by querying Firestore
     const userDoc = await db.collection('users').doc(userId).get();
 
-    if (userDoc.exists && hasApp) {
+    if (userDoc.exists && portalId) {
       console.log(`Document with id ${userDoc.id} exists`);
       return true;
     } else {
