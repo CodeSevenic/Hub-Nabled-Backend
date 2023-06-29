@@ -2,40 +2,6 @@
 
 // ======= User Features ======= //
 
-// // Enable a feature for a user
-// exports.enableFeature = async (userId, featureName) => {
-//   try {
-//     // Update the user document with the enabled feature
-//     await db
-//       .collection('users')
-//       .doc(userId)
-//       .update({
-//         [`features.${featureName}`]: true,
-//       });
-
-//     console.log(`Feature ${featureName} enabled for user ${userId}`);
-//   } catch (error) {
-//     console.error(`Failed to enable feature ${featureName} for user ${userId}: `, error.message);
-//   }
-// };
-
-// // Disable a feature for a user
-// exports.disableFeature = async (userId, featureName) => {
-//   try {
-//     // Update the user document with the disabled feature
-//     await db
-//       .collection('users')
-//       .doc(userId)
-//       .update({
-//         [`features.${featureName}`]: false,
-//       });
-
-//     console.log(`Feature ${featureName} disabled for user ${userId}`);
-//   } catch (error) {
-//     console.error(`Failed to disable feature ${featureName} for user ${userId}: `, error.message);
-//   }
-// };
-
 // Enable a feature for a user
 exports.enableFeature = async (userId, hubspotId, featureName) => {
   try {
@@ -81,74 +47,80 @@ exports.disableFeature = async (userId, hubspotId, featureName) => {
 };
 
 // Get all users with a feature enabled
-exports.getUsersWithFeature = async (featureName) => {
+exports.getUsersWithFeatureEnabled = async (hubspotId, featureName) => {
   try {
-    const snapshot = await db
+    // Query all users where the specified feature is enabled
+    const usersSnapshot = await db
       .collection('users')
-      .where(`features.${featureName}`, '==', true)
+      .where(`appAuths.${hubspotId}.features.${featureName}`, '==', true)
       .get();
 
     const users = [];
-    snapshot.forEach((doc) => {
-      users.push(doc.id);
-    });
+    usersSnapshot.forEach((doc) => users.push(doc.data()));
 
-    console.log(`Found ${users.length} users with ${featureName} enabled: `, users);
+    console.log(
+      `Found ${users.length} user(s) with feature ${featureName} enabled in hubspot account ${hubspotId}`
+    );
+
+    return users;
   } catch (error) {
-    console.error(`Failed to get users with ${featureName} enabled: `, error.message);
+    console.error(
+      `Failed to get users with feature ${featureName} enabled in hubspot account ${hubspotId}: `,
+      error.message
+    );
   }
 };
 
 // Get a user with a feature enabled
-exports.getUserWithFeature = async (userId, featureName) => {
+exports.getUserWithFeatureEnabled = async (userId, hubspotId, featureName) => {
   try {
-    const doc = await db.collection('users').doc(userId).get();
-    if (!doc.exists) {
-      console.log(`User ${userId} does not exist.`);
-      return;
-    }
+    // Get the user document where the specified feature is enabled
+    const userDoc = await db.collection('users').doc(userId).get();
 
-    const user = doc.data();
-    if (user.features && user.features[featureName]) {
-      console.log(`User ${userId} has feature ${featureName} enabled.`);
+    const user = userDoc.data();
+
+    if (user && user.appAuths[hubspotId] && user.appAuths[hubspotId].features[featureName]) {
+      console.log(
+        `User ${userId} has feature ${featureName} enabled in hubspot account ${hubspotId}`
+      );
+      return user;
     } else {
-      console.log(`User ${userId} does not have feature ${featureName} enabled.`);
+      console.log(
+        `User ${userId} does not have feature ${featureName} enabled in hubspot account ${hubspotId}`
+      );
+      return null;
     }
   } catch (error) {
-    console.error(`Failed to get user ${userId}: `, error.message);
+    console.error(
+      `Failed to get user ${userId} with feature ${featureName} enabled in hubspot account ${hubspotId}: `,
+      error.message
+    );
   }
 };
 
 // Get all features for a user
-exports.getUserFeatures = async (userId) => {
+exports.getAllFeaturesForUser = async (userId, hubspotId) => {
   try {
-    const snapshot = await db.collection('users').doc(userId).collection('features').get();
-    let features = {};
-    snapshot.forEach((doc) => {
-      features[doc.id] = doc.data();
-    });
+    // Get the user document
+    const userDoc = await db.collection('users').doc(userId).get();
 
-    return features;
-  } catch (error) {
-    console.error(`Failed to get features for user ${userId}: `, error.message);
-  }
-};
-// Get all features for a user
-exports.getUserFeatures = async (userId) => {
-  try {
-    const doc = await db.collection('users').doc(userId).get();
-    if (!doc.exists) {
-      console.log(`User ${userId} does not exist.`);
-      return;
-    }
+    const user = userDoc.data();
 
-    const user = doc.data();
-    if (user.features) {
-      console.log(`Features for user ${userId}: `, user.features);
+    if (user && user.appAuths[hubspotId]) {
+      const features = user.appAuths[hubspotId].features;
+      console.log(
+        `User ${userId} has the following features in hubspot account ${hubspotId}: `,
+        features
+      );
+      return features;
     } else {
-      console.log(`User ${userId} has no features.`);
+      console.log(`User ${userId} has no features in hubspot account ${hubspotId}`);
+      return {};
     }
   } catch (error) {
-    console.error(`Failed to get features for user ${userId}: `, error.message);
+    console.error(
+      `Failed to get features for user ${userId} in hubspot account ${hubspotId}: `,
+      error.message
+    );
   }
 };
