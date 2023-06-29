@@ -1,15 +1,13 @@
 ﻿const { enableFeature, disableFeature } = require('../firebase/features');
 
 exports.featureToggle = async (req, res) => {
-  const { userId, featureName, isEnabled } = req.body;
-
-  console.log('Request: ', req.body);
+  const { userId, featureName, isEnabled, portalId } = req.body;
 
   try {
     if (isEnabled) {
-      await enableFeature(userId, featureName);
+      await enableFeature(userId, portalId, featureName);
     } else {
-      await disableFeature(userId, featureName);
+      await disableFeature(userId, portalId, featureName);
     }
 
     res.status(200).json({
