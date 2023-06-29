@@ -86,6 +86,7 @@ const getUserById = async (userId) => {
 
 // Get user by email
 const getUserByEmail = async (email) => {
+  console.log('getUserByEmail: ', email);
   try {
     const userSnapshot = await db.collection('users').where('email', '==', email).get();
 

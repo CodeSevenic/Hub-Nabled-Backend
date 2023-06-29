@@ -42,6 +42,7 @@ exports.register = async (req, res) => {
 
 // function for user login API
 exports.login = async (req, res) => {
+  console.log('Login request received');
   try {
     const { email, password } = req.body;
 
