@@ -168,12 +168,12 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
   }
 };
 
-const refreshAccessToken = async (userId) => {
+const refreshAccessToken = async (userId, portalId) => {
   const user = await getUserById(userId);
   // get the app names from the user document
   let appNames = Object.keys(user.appAuths);
-  // get the first app name
-  const appToken = getAppTokens(user.appAuths, appNames[0]);
+  // app portalId by accountId or return all app portalIds
+  const appToken = getAppTokens(user.appAuths, portalId);
 
   try {
     const refreshTokenProof = {
@@ -192,18 +192,18 @@ const refreshAccessToken = async (userId) => {
   }
 };
 
-const getAccessToken = async (userId) => {
+const getAccessToken = async (userId, portalId) => {
   try {
     const user = await getUserById(userId);
     // get the app names from the user document
     let appNames = Object.keys(user.appAuths);
-    // get the first app name
-    const appToken = getAppTokens(user.appAuths, appNames[0]);
+    // app portalId by accountId or return all app portalIds
+    const appToken = getAppTokens(user.appAuths, portalId);
     // If the access token has expired, retrieve
     // a new one using the refresh token
     if (isTokenExpired(appToken.issuedAt)) {
       console.log('Refreshing expired access token');
-      const newAccessToken = await refreshAccessToken(userId);
+      const newAccessToken = await refreshAccessToken(userId, portalId);
       return newAccessToken;
     }
     console.log('Token has not expired');
