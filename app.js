@@ -41,7 +41,7 @@ const featuresRoutes = require('./routes/features');
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
 app.use('/api/', contactsRoutes);
-// app.use('/api/', featuresRoutes);
+app.use('/api/', featuresRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);
