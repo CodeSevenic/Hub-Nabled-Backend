@@ -11,7 +11,7 @@ const { PORT } = require('./config');
 // Set CORS headers
 app.use(
   cors({
-    origin: ['http://localhost:3000'], // Replace with your frontend origin
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // Replace with your frontend origin
     methods: ['GET', 'POST'],
     credentials: true,
   })

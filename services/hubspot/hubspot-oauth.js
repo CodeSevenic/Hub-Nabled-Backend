@@ -170,8 +170,6 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
 
 const refreshAccessToken = async (userId, portalId) => {
   const user = await getUserById(userId);
-  // get the app names from the user document
-  let appNames = Object.keys(user.appAuths);
   // app portalId by accountId or return all app portalIds
   const appToken = getAppTokens(user.appAuths, portalId);
 
@@ -195,8 +193,7 @@ const refreshAccessToken = async (userId, portalId) => {
 const getAccessToken = async (userId, portalId) => {
   try {
     const user = await getUserById(userId);
-    // get the app names from the user document
-    let appNames = Object.keys(user.appAuths);
+
     // app portalId by accountId or return all app portalIds
     const appToken = getAppTokens(user.appAuths, portalId);
     // If the access token has expired, retrieve
