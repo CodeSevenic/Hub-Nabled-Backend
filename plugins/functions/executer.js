@@ -10,7 +10,7 @@ exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
       console.log(
         `Feature ${featureName} is not enabled for user ${userId} in hubspot account ${hubspotId}`
       );
-      return;
+      return 'notEnabled';
     }
 
     // Execute the associated action
@@ -20,7 +20,7 @@ exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
         console.log(
           `Fetched ${contacts.length} contacts for user ${userId} in hubspot account ${hubspotId}`
         );
-        break;
+        return 'success';
 
       // Add other case statements for other features here...
 
@@ -28,12 +28,13 @@ exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
         console.log(
           `No action associated with feature ${featureName} for user ${userId} in hubspot account ${hubspotId}`
         );
-        break;
+        return 'noAction';
     }
   } catch (error) {
     console.error(
       `Failed to execute feature ${featureName} for user ${userId} in hubspot account ${hubspotId}: `,
       error.message
     );
+    throw error; // Re-throw the error so it can be caught by the route handler
   }
 };

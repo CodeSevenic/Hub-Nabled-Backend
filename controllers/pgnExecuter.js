@@ -1,39 +1,20 @@
-﻿const { getUserFeatures } = require('../firebase/features');
-const { fetchHubSpotContacts } = require('../plugins/fetchContacts');
+﻿const { executeFeatureAction } = require('../plugins/functions/executer');
 
-exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
+const pluginExecuter = async (req, res) => {
+  const { userId, hubspotId, featureName } = req.params;
+
   try {
-    // Check if the feature is enabled for the user
-    const features = await getUserFeatures(userId, hubspotId);
-    const feature = features[featureName];
-    if (!feature) {
-      console.log(
-        `Feature ${featureName} is not enabled for user ${userId} in hubspot account ${hubspotId}`
-      );
-      return;
-    }
-
-    // Execute the associated action
-    switch (featureName) {
-      case 'contacts':
-        const contacts = await fetchHubSpotContacts(userId, hubspotId);
-        console.log(
-          `Fetched ${contacts.length} contacts for user ${userId} in hubspot account ${hubspotId}`
-        );
-        break;
-
-      // Add other case statements for other features here...
-
-      default:
-        console.log(
-          `No action associated with feature ${featureName} for user ${userId} in hubspot account ${hubspotId}`
-        );
-        break;
-    }
+    // Use the `executeFeatureAction` function to execute the feature and send a success message
+    await executeFeatureAction(userId, hubspotId, featureName);
+    res.json({
+      message: `Executed feature ${featureName} for user ${userId} in hubspot account ${hubspotId}`,
+    });
   } catch (error) {
-    console.error(
-      `Failed to execute feature ${featureName} for user ${userId} in hubspot account ${hubspotId}: `,
-      error.message
-    );
+    // If there's an error, send an error message
+    res
+      .status(500)
+      .json({
+        message: `Failed to execute feature ${featureName} for user ${userId} in hubspot account ${hubspotId}: ${error.message}`,
+      });
   }
 };
