@@ -1,7 +1,7 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
+const { fetchHubSpotContacts } = require('../fetchContacts');
 
 // Import the feature functions
-const { fetchHubSpotContacts } = require('./path_to_your_file'); // Replace with the actual path to your file
 
 const featuresList = {
   contacts: {
