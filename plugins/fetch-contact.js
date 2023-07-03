@@ -1,7 +1,7 @@
 ﻿const { default: axios } = require('axios');
 
 // Define an async function to get contacts
-const contactsViewer = async (accessToken) => {
+const fetchContacts = async (accessToken) => {
   console.log('=== Retrieving all contacts from HubSpot using the access token ===');
 
   let after = '';
@@ -45,5 +45,5 @@ const contactsViewer = async (accessToken) => {
 };
 
 module.exports = {
-  contactsViewer,
+  fetchContacts,
 };

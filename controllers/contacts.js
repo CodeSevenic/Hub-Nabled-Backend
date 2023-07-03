@@ -1,4 +1,4 @@
-﻿const { contactsViewer } = require('../plugins/contacts-viewer');
+﻿const { contactsViewer } = require('../plugins/fetch-contact');
 const { getAccessToken, isAuthorized } = require('../services/hubspot');
 
 exports.contacts = async (req, res) => {
