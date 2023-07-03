@@ -45,7 +45,7 @@ const fetchContacts = async (accessToken) => {
   return allContacts;
 };
 
-exports.fetchHubSpotContacts = async (req, res) => {
+const fetchHubSpotContacts = async (req, res) => {
   const userId = req.session.userId;
 
   const portalId = req.params.portalId ? req.params.portalId : req.session.portalId;

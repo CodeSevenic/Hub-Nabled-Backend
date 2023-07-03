@@ -1,5 +1,5 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
-const { fetchContacts } = require('../fetch-contact');
+const { fetchHubSpotContacts } = require('../fetchContacts');
 
 exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
   try {
@@ -16,7 +16,7 @@ exports.executeFeatureAction = async (userId, hubspotId, featureName) => {
     // Execute the associated action
     switch (featureName) {
       case 'contacts':
-        const contacts = await fetchContacts(userId, hubspotId);
+        const contacts = await fetchHubSpotContacts(userId, hubspotId);
         console.log(
           `Fetched ${contacts.length} contacts for user ${userId} in hubspot account ${hubspotId}`
         );
