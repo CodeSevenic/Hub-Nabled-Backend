@@ -1,6 +1,6 @@
 ﻿const { executeFeatureAction } = require('../plugins/functions/executer');
 
-exports.pluginExecuter = async (req, res) => {
+exports.pluginExecution = async (req, res) => {
   const { userId, hubspotId, featureName } = req.params;
 
   try {

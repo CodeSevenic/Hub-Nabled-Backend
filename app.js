@@ -39,6 +39,7 @@ const pluginExecutionRoutes = require('./routes/pluginExecution');
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
 app.use('/api/', featuresRoutes);
+app.use('/api/', pluginExecutionRoutes);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);
