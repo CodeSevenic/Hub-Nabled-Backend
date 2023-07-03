@@ -1,4 +1,5 @@
 ﻿const { enableFeature, disableFeature } = require('../firebase/features');
+const { getAllFeatures, getEnabledFeatures } = require('../plugins/functions/features');
 
 exports.featureToggle = async (req, res) => {
   const { userId, featureName, isEnabled, portalId } = req.body;
@@ -17,4 +18,15 @@ exports.featureToggle = async (req, res) => {
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });
   }
+};
+
+exports.getAllAvailableFeatures = (req, res) => {
+  const features = getAllFeatures();
+  res.json(features);
+};
+
+exports.getUserEnabledFeatures = async (req, res) => {
+  const { userId, hubspotId } = req.params;
+  const features = await getEnabledFeatures(userId, hubspotId);
+  res.json(features);
 };

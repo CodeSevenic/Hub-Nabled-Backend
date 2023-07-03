@@ -11,7 +11,6 @@ router.post('/login', login);
 router.get('/install', handleInstall);
 // API route to run Oauth function
 router.get('/oauth-callback', handleOauthCallback);
-
 // API route for user logout
 router.post('/logout', logout);
 
