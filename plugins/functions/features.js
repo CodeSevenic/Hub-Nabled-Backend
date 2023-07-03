@@ -1,7 +1,11 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
 
+// Import the feature functions
+const { fetchHubSpotContacts } = require('./path_to_your_file'); // Replace with the actual path to your file
+
 const featuresList = {
   contacts: {
+    name: 'Fetch Hubspot Contacts',
     function: fetchHubSpotContacts,
     description: "Fetches contacts from a user's Hubspot account",
   },
@@ -9,23 +13,21 @@ const featuresList = {
 };
 
 exports.getAllFeatures = () => {
-  const featureKeys = Object.keys(featuresList);
-  const featureDescriptions = featureKeys.map((feature) => ({
-    name: feature,
-    description: featuresList[feature].description,
-  }));
-
-  return featureDescriptions;
+  return Object.values(featuresList);
 };
 
 exports.getEnabledFeatures = async (userId, hubspotId) => {
   const userFeatures = await getUserFeatures(userId, hubspotId);
   const enabledFeatureKeys = Object.keys(userFeatures).filter((feature) => userFeatures[feature]);
 
-  const enabledFeatureDescriptions = enabledFeatureKeys.map((feature) => ({
-    name: feature,
-    description: featuresList[feature].description,
-  }));
+  const enabledFeatures = enabledFeatureKeys.map((featureKey) => {
+    const feature = featuresList[featureKey];
+    return {
+      name: feature.name,
+      description: feature.description,
+      featureId: featureKey,
+    };
+  });
 
-  return enabledFeatureDescriptions;
+  return enabledFeatures;
 };
