@@ -1,4 +1,5 @@
-﻿const { getAccessToken, isAuthorized, getContacts } = require('../services/hubspot');
+﻿const { contactsViewer } = require('../plugins/contacts-viewer');
+const { getAccessToken, isAuthorized } = require('../services/hubspot');
 
 exports.contacts = async (req, res) => {
   const userId = req.session.userId;
@@ -13,7 +14,7 @@ exports.contacts = async (req, res) => {
   if (authorized) {
     const accessToken = await getAccessToken(userId, portalId);
 
-    const contacts = await getContacts(accessToken);
+    const contacts = await contactsViewer(accessToken);
 
     res.json(contacts);
   } else {
