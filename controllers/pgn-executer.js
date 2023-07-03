@@ -1,4 +1,4 @@
-﻿const { getUserFeatures } = require('./firebase-features'); // Import the function to get user features
+﻿const { getUserFeatures } = require('../firebase/features');
 const { fetchHubSpotContacts } = require('./hubspot'); // Import the function to fetch contacts
 
 exports.executeFeatureAction = async (userId, hubspotId, featureName) => {

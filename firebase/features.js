@@ -71,6 +71,32 @@ exports.getUsersWithFeatureEnabled = async (hubspotId, featureName) => {
   }
 };
 
+// Get features of a user for a particular Hubspot account
+exports.getUserFeatures = async (userId, hubspotId) => {
+  try {
+    // Get the user document
+    const userDoc = await db.collection('users').doc(userId).get();
+    const user = userDoc.data();
+
+    if (user && user.appAuths[hubspotId]) {
+      const features = user.appAuths[hubspotId].features;
+      console.log(
+        `User ${userId} has these features enabled in hubspot account ${hubspotId}: `,
+        features
+      );
+      return features;
+    } else {
+      console.log(`No features found for User ${userId} in hubspot account ${hubspotId}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(
+      `Failed to get features for user ${userId} in hubspot account ${hubspotId}: `,
+      error.message
+    );
+  }
+};
+
 // Get a user with a feature enabled
 exports.getUserWithFeatureEnabled = async (userId, hubspotId, featureName) => {
   try {
