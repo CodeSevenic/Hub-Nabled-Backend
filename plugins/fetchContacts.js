@@ -51,6 +51,7 @@ const fetchHubSpotContacts = async (userId, portalId) => {
     const accessToken = await getAccessToken(userId, portalId);
 
     const contacts = await fetchContacts(accessToken);
+    console.log('Contacts', contacts);
     return contacts;
   } else {
     console.log('User is not authorized or has not installed an app');

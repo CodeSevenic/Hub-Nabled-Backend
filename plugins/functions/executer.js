@@ -1,4 +1,5 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
+const { featuresList } = require('./featureList');
 
 exports.executeFeatureAction = async (userId, hubspotId, featureId) => {
   try {
