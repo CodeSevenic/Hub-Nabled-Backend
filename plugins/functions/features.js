@@ -20,8 +20,8 @@ exports.getEnabledFeatures = async (userId, hubspotId) => {
   const enabledFeatures = enabledFeatureKeys.map((featureKey) => {
     const feature = featuresList[featureKey];
     return {
-      name: feature.name,
-      description: feature.description,
+      name: feature?.name,
+      description: feature?.description,
       featureId: featureKey,
     };
   });

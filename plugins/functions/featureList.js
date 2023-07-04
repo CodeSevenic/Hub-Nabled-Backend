@@ -1,4 +1,5 @@
 ﻿const { fetchHubSpotContacts } = require('../fetchContacts');
+const nameFormatter = require('../nameFormatter');
 
 exports.featuresList = {
   contacts: {
@@ -7,11 +8,11 @@ exports.featuresList = {
     description: "Fetches contacts from a user's HubSpot account",
     featureId: 'contacts',
   },
-  contactFormatter: {
-    name: 'Hubspot Contact Formatter',
-    function: fetchHubSpotContacts,
+  nameFormatter: {
+    name: 'Hubspot name Formatter',
+    function: nameFormatter,
     description: "Formats contacts from a user's HubSpot account",
-    featureId: 'contactFormatter',
+    featureId: 'nameFormatter',
   },
   deals: {
     name: 'Deals Explorer',
