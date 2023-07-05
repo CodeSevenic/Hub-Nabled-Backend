@@ -1,7 +1,7 @@
 ﻿const express = require('express');
 const router = express.Router();
 const { handleInstall, handleOauthCallback } = require('../services/hubspot');
-const { register, login, logout, isLoggedIn } = require('../controllers/auth');
+const { register, login, logout, getUserAuths } = require('../controllers/auth');
 
 // API route for user registration
 router.post('/register', register);
@@ -13,5 +13,7 @@ router.get('/install', handleInstall);
 router.get('/oauth-callback', handleOauthCallback);
 // API route for user logout
 router.post('/logout', logout);
+// API route to get user auths
+router.get('/user-auths/:userId', getUserAuths);
 
 module.exports = router;

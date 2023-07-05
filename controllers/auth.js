@@ -93,6 +93,20 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.getUserAuths = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await getUserById(userId);
+
+    res.status(200).json({
+      message: 'Successfully retrieved user auths',
+      appAuths: user.appAuths ? user.appAuths : {},
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Couldn't  get user auths", error: error.message });
+  }
+};
+
 exports.logout = async (req, res) => {
   req.session.destroy(function (err) {
     if (err) {
