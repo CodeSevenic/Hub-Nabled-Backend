@@ -1,5 +1,6 @@
 {
-  "name": "hb-backend",
+  "name": "yubodata-api-integrations",
+  "author": "Sibusiso Shongwe",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
