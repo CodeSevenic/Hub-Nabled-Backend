@@ -49,6 +49,33 @@ const storeUserAppAuth = async (
     }
   }
 };
+// Delete authentications under a user account
+const deleteUserAppAuth = async (userId, portalId) => {
+  console.log('deleteUserAppAuth Running...');
+  // Get the user document reference
+  const userDoc = db.doc(`users/${userId}`);
+
+  // Fetch the document and check if it exists
+  const docSnapshot = await userDoc.get();
+  if (docSnapshot.exists) {
+    const userData = docSnapshot.data();
+
+    // Check if 'appAuths' object exists
+    let appAuths = userData.appAuths || {};
+
+    if (appAuths && appAuths[portalId]) {
+      // Delete the appAuth object with the provided portalId
+      delete appAuths[portalId];
+
+      // If the document exists, update it with the 'appAuths' object.
+      await userDoc.set({ appAuths }, { merge: true });
+
+      console.log(`       > App ${portalId} deleted from user ${userId}`);
+    } else {
+      console.log(`       > App ${portalId} does not exist in user ${userId}`);
+    }
+  }
+};
 
 // Get app by name
 const getAppByName = async (appName) => {
@@ -126,4 +153,12 @@ const getAppTokens = (userApps, appName = undefined) => {
   }
 };
 
-module.exports = { db, storeUserAppAuth, getAppByName, getUserById, getUserByEmail, getAppTokens };
+module.exports = {
+  db,
+  storeUserAppAuth,
+  getAppByName,
+  getUserById,
+  getUserByEmail,
+  getAppTokens,
+  deleteUserAppAuth,
+};
