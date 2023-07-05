@@ -68,7 +68,7 @@ const deleteUserAppAuth = async (userId, portalId) => {
       delete appAuths[portalId];
 
       // If the document exists, update it with the 'appAuths' object.
-      await userDoc.set({ appAuths }, { merge: true });
+      await userDoc.update({ appAuths });
 
       console.log(`       > App ${portalId} deleted from user ${userId}`);
     } else {
