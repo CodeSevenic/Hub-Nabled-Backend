@@ -118,25 +118,26 @@ async function associateObjects(customObjectName, customObjectId, contactId, acc
   }
 }
 
-const createContactAndCustomObject = async (userId, portalId) => {
-  const customObjectName = 'trading-accounts'; // Replace with your actual custom object name
+const createContactAndCustomObject = async (userId, portalId, request) => {
+  console.log('Request body:', request.body);
+  // const customObjectName = 'trading-accounts'; // Replace with your actual custom object name
 
-  try {
-    const authorized = await isAuthorized(userId, portalId);
-    if (authorized) {
-      const contactId = await createContact(accessToken);
-      const customObjectId = await createCustomObject(customObjectName, accessToken);
+  // try {
+  //   const authorized = await isAuthorized(userId, portalId);
+  //   if (authorized) {
+  //     const contactId = await createContact(accessToken);
+  //     const customObjectId = await createCustomObject(customObjectName, accessToken);
 
-      await associateObjects(customObjectName, customObjectId, contactId, accessToken);
-    } else {
-      console.log('User is not authorized or has not installed an app');
+  //     await associateObjects(customObjectName, customObjectId, contactId, accessToken);
+  //   } else {
+  //     console.log('User is not authorized or has not installed an app');
 
-      // Throw an error if the user is not authorized
-      throw new Error('You are not authorized or have not installed an app');
-    }
-  } catch (error) {
-    console.error('Error creating contact and custom object:', error);
-  }
+  //     // Throw an error if the user is not authorized
+  //     throw new Error('You are not authorized or have not installed an app');
+  //   }
+  // } catch (error) {
+  //   console.error('Error creating contact and custom object:', error);
+  // }
 };
 
 module.exports = { createContactAndCustomObject };

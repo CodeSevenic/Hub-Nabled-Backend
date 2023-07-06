@@ -1,4 +1,5 @@
-﻿const { createObjectSchema } = require('../createObjectSchema');
+﻿const { createContactAndCustomObject } = require('../createContactAndCustomObject');
+const { createObjectSchema } = require('../createObjectSchema');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
 
@@ -32,6 +33,13 @@ exports.featuresList = {
     function: createObjectSchema,
     description: 'Create Object Schema in your connected HubSpot portal',
     featureId: 'createObjectSchema',
+  },
+  createContactAndCustomObject: {
+    name: 'Object Schema Creator',
+    function: createContactAndCustomObject,
+    description:
+      'Create a contact and associate it with a custom object in your connected HubSpot portal',
+    featureId: 'createContactAndCustomObject',
   },
   // Add other feature-function mappings here...
 };
