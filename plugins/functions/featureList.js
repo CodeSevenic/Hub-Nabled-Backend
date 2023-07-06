@@ -35,7 +35,7 @@ exports.featuresList = {
     featureId: 'createObjectSchema',
   },
   createContactAndCustomObject: {
-    name: 'Object Schema Creator',
+    name: 'Create Contact and Custom Object',
     function: createContactAndCustomObject,
     description:
       'Create a contact and associate it with a custom object in your connected HubSpot portal',

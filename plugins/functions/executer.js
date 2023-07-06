@@ -2,6 +2,9 @@
 const { featuresList } = require('./featureList');
 
 exports.executeFeatureAction = async (userId, hubspotId, featureId, request = null) => {
+  console.log(
+    `Request info: userId: ${userId}, hubspotId: ${hubspotId}, featureId: ${featureId}, request: ${request.body}`
+  );
   try {
     // Check if the feature is enabled for the user
     const userFeatures = await getUserFeatures(userId, hubspotId);
