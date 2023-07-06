@@ -1,7 +1,7 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
 const { featuresList } = require('./featureList');
 
-exports.executeFeatureAction = async (userId, hubspotId, featureId) => {
+exports.executeFeatureAction = async (userId, hubspotId, featureId, request = null) => {
   try {
     // Check if the feature is enabled for the user
     const userFeatures = await getUserFeatures(userId, hubspotId);
@@ -14,7 +14,7 @@ exports.executeFeatureAction = async (userId, hubspotId, featureId) => {
     }
 
     // Execute the associated action
-    const result = await feature.function(userId, hubspotId);
+    const result = await feature.function(userId, hubspotId, request);
     console.log(`Executed feature ${featureId} for user ${userId} in hubspot account ${hubspotId}`);
     return 'success';
   } catch (error) {

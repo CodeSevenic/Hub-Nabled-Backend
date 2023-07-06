@@ -1,4 +1,5 @@
-﻿const { fetchHubSpotContacts } = require('../fetchContacts');
+﻿const { createObjectSchema } = require('../createObjectSchema');
+const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
 
 exports.featuresList = {
@@ -25,6 +26,12 @@ exports.featuresList = {
     function: fetchHubSpotContacts,
     description: "Fetches lists from a user's HubSpot account",
     featureId: 'lists',
+  },
+  createObjectSchema: {
+    name: 'List View',
+    function: createObjectSchema,
+    description: 'Create Object Schema in your connected HubSpot portal',
+    featureId: 'createObjectSchema',
   },
   // Add other feature-function mappings here...
 };

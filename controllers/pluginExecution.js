@@ -7,7 +7,7 @@ exports.pluginExecution = async (req, res) => {
 
   try {
     // Use the `executeFeatureAction` function to execute the feature
-    const result = await executeFeatureAction(userId, hubspotId, featureId);
+    const result = await executeFeatureAction(userId, hubspotId, featureId, req);
 
     // Send a response based on the result
     switch (result) {

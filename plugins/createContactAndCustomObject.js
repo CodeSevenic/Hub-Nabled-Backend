@@ -1,46 +1,46 @@
 ﻿const axios = require('axios');
 const { isAuthorized } = require('../services/hubspot');
 
-const createObjectSchema = async (accessToken) => {
-  const ObjectSchemaEgg = {
-    labels: {
-      singular: 'Trading Account',
-      plural: 'Trading Accounts',
-    },
-    requiredProperties: ['account', 'balance', 'platform', 'type'],
-    searchableProperties: [null],
-    primaryDisplayProperty: 'account',
-    secondaryDisplayProperties: [null],
-    properties: [
-      { name: 'account', label: 'Account', isPrimaryDisplayLabel: true },
-      { name: 'balance', label: 'Balance', isPrimaryDisplayLabel: false },
-      { name: 'platform', label: 'Platform', isPrimaryDisplayLabel: false },
-      { name: 'type', label: 'Type', isPrimaryDisplayLabel: false },
-    ],
-    associatedObjects: ['CONTACT'],
-    name: 'trading-accounts',
-  };
+// const createObjectSchema = async (accessToken) => {
+//   const ObjectSchemaEgg = {
+//     labels: {
+//       singular: 'Trading Account',
+//       plural: 'Trading Accounts',
+//     },
+//     requiredProperties: ['account', 'balance', 'platform', 'type'],
+//     searchableProperties: [null],
+//     primaryDisplayProperty: 'account',
+//     secondaryDisplayProperties: [null],
+//     properties: [
+//       { name: 'account', label: 'Account', isPrimaryDisplayLabel: true },
+//       { name: 'balance', label: 'Balance', isPrimaryDisplayLabel: false },
+//       { name: 'platform', label: 'Platform', isPrimaryDisplayLabel: false },
+//       { name: 'type', label: 'Type', isPrimaryDisplayLabel: false },
+//     ],
+//     associatedObjects: ['CONTACT'],
+//     name: 'trading-accounts',
+//   };
 
-  try {
-    const response = await axios({
-      method: 'post',
-      url: `https://api.hubapi.com/crm/v3/schemas`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      data: ObjectSchemaEgg,
-    });
+//   try {
+//     const response = await axios({
+//       method: 'post',
+//       url: `https://api.hubapi.com/crm/v3/schemas`,
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//       data: ObjectSchemaEgg,
+//     });
 
-    console.log(JSON.stringify(response.data, null, 2));
-  } catch (error) {
-    if (error.response) {
-      console.error(JSON.stringify(error.response.data, null, 2));
-    } else {
-      console.error(error.message);
-    }
-  }
-};
+//     console.log(JSON.stringify(response.data, null, 2));
+//   } catch (error) {
+//     if (error.response) {
+//       console.error(JSON.stringify(error.response.data, null, 2));
+//     } else {
+//       console.error(error.message);
+//     }
+//   }
+// };
 
 async function createContact(accessToken) {
   const headers = {
@@ -139,4 +139,4 @@ const createContactAndCustomObject = async (userId, portalId) => {
   }
 };
 
-module.exports = createContactAndCustomObject;
+module.exports = { createContactAndCustomObject };
