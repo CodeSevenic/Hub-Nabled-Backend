@@ -37,11 +37,13 @@ const authRoutes = require('./routes/auth');
 const featuresRoutes = require('./routes/features');
 const pluginExecutionRoutes = require('./routes/pluginExecution');
 const firebase = require('./routes/firebase');
+const hubSpot = require('./routes/hubspot');
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
 app.use('/api/', featuresRoutes);
 app.use('/api/', pluginExecutionRoutes);
 app.use('/api/', firebase);
+app.use('/api/', hubSpot);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
 // opn(`http://localhost:${PORT}/api/`);
