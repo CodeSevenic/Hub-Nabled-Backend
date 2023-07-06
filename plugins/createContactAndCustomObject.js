@@ -52,7 +52,7 @@ async function createCustomObject(customObjectName, accessToken, properties) {
 }
 
 async function associateObjects(customObjectName, customObjectId, contactId, accessToken) {
-  const apiUrl = `https://api.hubapi.com/crm/v3/objects/${customObjectName}/${customObjectId}/associations/contacts/${contactId}/associated`;
+  const apiUrl = `https://api.hubapi.com/crm/v3/objects/${customObjectName}/${customObjectId}/associations/contacts/${contactId}/contact_trading_information`;
 
   const headers = {
     Authorization: `Bearer ${accessToken}`,
