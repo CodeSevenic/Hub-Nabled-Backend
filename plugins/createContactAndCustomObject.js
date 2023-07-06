@@ -52,7 +52,7 @@ async function createCustomObject(customObjectName, accessToken, properties) {
 }
 
 async function associateObjects(customObjectName, customObjectId, contactId, accessToken) {
-  const apiUrl = `https://api.hubapi.com/crm/v3/objects/${customObjectName}/${customObjectId}/associations/contacts/${contactId}`;
+  const apiUrl = `https://api.hubapi.com/crm/v3/objects/${customObjectName}/${customObjectId}/associations/contacts/${contactId}/associated`;
 
   const headers = {
     Authorization: `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ async function associateObjects(customObjectName, customObjectId, contactId, acc
   };
 
   try {
-    const response = await axios.post(apiUrl, {}, { headers });
+    const response = await axios.put(apiUrl, {}, { headers });
 
     console.log('Association created successfully:', response.data);
   } catch (error) {
@@ -72,6 +72,7 @@ const createContactAndCustomObject = async (userId, portalId, request) => {
   const contactProperties = request.body.contactInfo;
   const customObjectName = request.body.customObjectInfo.customObjectName;
   const customObjectProperties = request.body.customObjectInfo.properties;
+
   const propertiesObj = customObjectProperties.reduce((obj, property) => {
     obj[property.name] = property.label;
     return obj;
@@ -81,12 +82,12 @@ const createContactAndCustomObject = async (userId, portalId, request) => {
     const authorized = await isAuthorized(userId, portalId);
     if (authorized) {
       const accessToken = await getAccessToken(userId, portalId);
-      // const contactId = await createContact(accessToken, contactProperties);
+      const contactId = await createContact(accessToken, contactProperties);
       const customObjectId = await createCustomObject(customObjectName, accessToken, propertiesObj);
 
       console.log('Object created successfully:', customObjectId);
 
-      // await associateObjects(customObjectName, customObjectId, contactId, accessToken);
+      await associateObjects(customObjectName, customObjectId, contactId, accessToken);
     } else {
       console.log('User is not authorized or has not installed an app');
 
