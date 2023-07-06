@@ -72,19 +72,19 @@ const createContactAndCustomObject = async (userId, portalId, request) => {
   const contactProperties = request.body.contactInfo;
   const customObjectName = request.body.customObjectInfo.customObjectName;
   const customObjectProperties = request.body.customObjectInfo.properties;
-  console.log('contactProperties', contactProperties);
+  const propertiesObj = customObjectProperties.reduce((obj, property) => {
+    obj[property.name] = property.label;
+    return obj;
+  }, {});
+  console.log('customObjectProperties', propertiesObj);
   try {
     const authorized = await isAuthorized(userId, portalId);
     if (authorized) {
       const accessToken = await getAccessToken(userId, portalId);
-      const contactId = await createContact(accessToken, contactProperties);
-      // const customObjectId = await createCustomObject(
-      //   customObjectName,
-      //   accessToken,
-      //   customObjectProperties
-      // );
+      // const contactId = await createContact(accessToken, contactProperties);
+      const customObjectId = await createCustomObject(customObjectName, accessToken, propertiesObj);
 
-      console.log('Contact created successfully:', contactId);
+      console.log('Object created successfully:', customObjectId);
 
       // await associateObjects(customObjectName, customObjectId, contactId, accessToken);
     } else {
