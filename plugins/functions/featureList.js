@@ -28,7 +28,7 @@ exports.featuresList = {
     featureId: 'lists',
   },
   createObjectSchema: {
-    name: 'List View',
+    name: 'Object Schema Creator',
     function: createObjectSchema,
     description: 'Create Object Schema in your connected HubSpot portal',
     featureId: 'createObjectSchema',
