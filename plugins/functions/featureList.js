@@ -41,12 +41,5 @@ exports.featuresList = {
       'Create a contact and associate it with a custom object in your connected HubSpot portal',
     featureId: 'createContactAndCustomObject',
   },
-  createContactAndCustomObject: {
-    name: 'Dance',
-    function: createContactAndCustomObject,
-    description:
-      'Create a contact and associate it with a custom object in your connected HubSpot portal',
-    featureId: 'dance',
-  },
   // Add other feature-function mappings here...
 };
