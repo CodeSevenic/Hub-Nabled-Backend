@@ -40,7 +40,7 @@ const firebase = require('./routes/firebase');
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
 app.use('/api/', featuresRoutes);
-// app.use('/api/', pluginExecutionRoutes);
+app.use('/api/', pluginExecutionRoutes);
 app.use('/api/', firebase);
 
 app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
