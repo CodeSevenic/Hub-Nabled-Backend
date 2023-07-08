@@ -9,12 +9,18 @@ const limiter = new Bottleneck({
 });
 
 async function formatContact(id, firstName, lastName, accessToken) {
-  const newName = firstName
-    ? firstName.charAt(0).toUpperCase() + firstName.substr(1).toLowerCase()
-    : '';
-  const newLastName = lastName
-    ? lastName.charAt(0).toUpperCase() + lastName.substr(1).toLowerCase()
-    : '';
+  const formatName = (name) => {
+    if (typeof name === 'string' && name.length > 0) {
+      return name
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+    return name;
+  };
+
+  const newName = formatName(firstName);
+  const newLastName = formatName(lastName);
 
   try {
     await axios.patch(
@@ -37,42 +43,46 @@ async function formatContact(id, firstName, lastName, accessToken) {
   }
 }
 
-async function getContact(accessToken, after = '') {
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'Content-Type': 'application/json',
-  };
-
-  try {
-    const results = await request.get(
-      `https://api.hubapi.com/crm/v3/objects/contacts?limit=100&after=${after}`,
-      { headers: headers }
-    );
-    return JSON.parse(results);
-  } catch (e) {
-    console.error('Unable to retrieve contact: ', e.message);
-  }
-}
-
-async function fetchAllContacts(accessToken) {
+const fetchAllContacts = async (accessToken) => {
+  console.log('=== Retrieving all contacts from HubSpot using the access token ===');
   let after = '';
   let allContacts = [];
+  let keepGoing = true;
 
-  while (true) {
-    const response = await getContact(accessToken, after);
-    allContacts = allContacts.concat(response.results);
+  // Keep making requests until all contacts are retrieved
+  while (keepGoing) {
+    try {
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      };
 
-    if (response.paging && response.paging.next) {
-      after = response.paging.next.after;
-    } else {
-      break;
+      let url = `https://api.hubapi.com/crm/v3/objects/contacts?limit=100${
+        after ? `&after=${after}` : ''
+      }`;
+
+      const { data } = await axios.get(url, { headers });
+
+      // Add the retrieved contacts to the 'allContacts' array
+      allContacts = [...allContacts, ...data.results];
+
+      // If there's a next page, prepare to fetch it in the next loop iteration
+      if (data.paging && data.paging.next) {
+        after = data.paging.next.after;
+      } else {
+        keepGoing = false;
+      }
+    } catch (error) {
+      console.error('Failed to retrieve contacts: ', error.message);
+      keepGoing = false;
     }
   }
 
   return allContacts;
-}
+};
 
 const nameFormatter = async (userId, portalId, req, isWebhook) => {
+  console.log('isWebhook', isWebhook);
   const authorized = await isAuthorized(userId, portalId);
 
   if (!authorized) {
@@ -82,25 +92,31 @@ const nameFormatter = async (userId, portalId, req, isWebhook) => {
 
   try {
     const accessToken = await getAccessToken(userId, portalId);
-    const contactId = req.body && req.body[0].objectId ? req.body[0].objectId : null;
 
-    if (isWebhook) {
-      const { firstname, lastname } = req.body;
-      formatContact(contactId, firstname, lastname, accessToken);
+    if (isWebhook == true) {
+      const webhooksEvent = req.body;
+      for (const event of webhooksEvent) {
+        const contactId = event.objectId;
+        let firstname = null;
+        let lastname = null;
+
+        if (event.propertyName === 'firstname') {
+          firstname = event.propertyValue;
+        } else if (event.propertyName === 'lastname') {
+          lastname = event.propertyValue;
+        }
+
+        await formatContact(contactId, firstname, lastname, accessToken);
+      }
     } else {
       // Fetch all contacts with pagination
       const allContacts = await fetchAllContacts(accessToken);
 
       // Use the rate limiter to update the contacts
       allContacts.forEach((element) => {
-        limiter.schedule(() =>
-          formatContact(
-            element.id,
-            element.properties.firstname,
-            element.properties.lastname,
-            accessToken
-          )
-        );
+        const firstname = element.properties ? element.properties.firstname : null;
+        const lastname = element.properties ? element.properties.lastname : null;
+        limiter.schedule(() => formatContact(element.id, firstname, lastname, accessToken));
       });
     }
   } catch (error) {
