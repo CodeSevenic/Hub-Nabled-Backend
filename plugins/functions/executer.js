@@ -23,7 +23,7 @@ exports.executeFeatureAction = async (
     }
 
     // Execute the associated action
-    const result = await feature.function(userId, hubspotId, request);
+    const result = await feature.function(userId, hubspotId, request, isWebhook);
     console.log(`Executed feature ${featureId} for user ${userId} in hubspot account ${hubspotId}`);
     return 'success';
   } catch (error) {
