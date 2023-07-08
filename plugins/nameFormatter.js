@@ -69,7 +69,12 @@ const getContact = async (accessToken) => {
   }
 };
 
-const nameFormatter = async (userId, portalId) => {
+const nameFormatter = async (userId, portalId, req, isWebhook) => {
+  // At the start of the function
+  console.log(`Running nameFormatter for userId ${userId} in hubspotId ${portalId}`);
+
+  console.log('Parameters: ', userId, portalId, req.body, isWebhook);
+
   const authorized = await isAuthorized(userId, portalId);
   try {
     if (authorized) {

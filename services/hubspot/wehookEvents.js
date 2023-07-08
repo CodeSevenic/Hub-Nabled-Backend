@@ -3,7 +3,7 @@ const { getUserIdByPortalId } = require('../../firebase/firebaseAdmin');
 
 const eventToFeatureMap = {
   'contact.created': ['feature1', 'feature2'],
-  'contact.updated': ['feature3'],
+  'contact.propertyChange': ['nameFormatter'],
   // ...
 };
 
@@ -37,6 +37,11 @@ exports.webhookEvents = async (req, res) => {
       // Iterate over featureIds and execute each one
       for (const featureId of featureIds) {
         const mockReq = { params: { userId, hubspotId: portalId, featureId } };
+
+        // In the webhookEvents function, before calling pluginExecution
+        console.log(
+          `Executing featureId ${featureId} for userId ${userId} in hubspotId ${portalId}`
+        );
 
         // Call pluginExecution function
         await pluginExecution(mockReq, mockRes, true);
