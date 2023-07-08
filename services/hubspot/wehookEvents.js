@@ -1,9 +1,12 @@
-﻿exports.webhookEvents = async (req, res) => {
+﻿const { getUserIdByPortalId } = require('../../firebase/firebaseAdmin');
+
+exports.webhookEvents = async (req, res) => {
   console.log('webhooksEvent', req.body);
   res.status(200).end();
-  // const portalId = req.body.portalId;
+  const portalId = req.body.portalId;
   // // Get userId by portalId
-  // const userId = await getUserIdByPortalId(portalId);
+  const userId = await getUserIdByPortalId(portalId);
+
   // if (!userId) {
   //   return res.status(404).json({ message: 'User not found' });
   // }
