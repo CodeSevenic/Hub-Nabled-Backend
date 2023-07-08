@@ -18,6 +18,9 @@ const storeUserAppAuth = async (
   appPortalInfo = {}
 ) => {
   console.log('storeUserAppAuth Running...');
+  // Convert portalId to string
+  portalId = String(portalId);
+
   // Get the user document reference
   const userDoc = db.doc(`users/${userId}`);
 
@@ -47,8 +50,14 @@ const storeUserAppAuth = async (
     } else {
       console.log(`       > App ${portalId} added to user ${userId}`);
     }
+
+    // Additionally, update the portal-to-user mapping
+    const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
+    await portalUserMapping.set({ userId }, { merge: true });
+    console.log(`       > PortalUserMapping for portal ${portalId} updated`);
   }
 };
+
 // Delete authentications under a user account
 const deleteUserAppAuth = async (userId, portalId) => {
   console.log('deleteUserAppAuth Running...');
@@ -71,6 +80,11 @@ const deleteUserAppAuth = async (userId, portalId) => {
       await userDoc.update({ appAuths });
 
       console.log(`       > App ${portalId} deleted from user ${userId}`);
+
+      // Additionally, delete the portal-to-user mapping
+      const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
+      await portalUserMapping.delete();
+      console.log(`       > PortalUserMapping for portal ${portalId} deleted`);
     } else {
       console.log(`       > App ${portalId} does not exist in user ${userId}`);
     }
