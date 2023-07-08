@@ -1,7 +1,13 @@
 ﻿const { getUserFeatures } = require('../../firebase/features');
 const { featuresList } = require('./featureList');
 
-exports.executeFeatureAction = async (userId, hubspotId, featureId, request = null) => {
+exports.executeFeatureAction = async (
+  userId,
+  hubspotId,
+  featureId,
+  request = null,
+  isWebhook = false
+) => {
   console.log(
     `Request info: userId: ${userId}, hubspotId: ${hubspotId}, featureId: ${featureId}, request: ${request.body}`
   );

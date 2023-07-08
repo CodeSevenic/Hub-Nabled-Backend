@@ -1,13 +1,13 @@
 ﻿const { executeFeatureAction } = require('../plugins/functions/executer');
 
-exports.pluginExecution = async (req, res) => {
+exports.pluginExecution = async (req, res, isWebhook = false) => {
   const { userId, hubspotId, featureId } = req.params;
 
   console.log(`Executing feature ${featureId} for user ${userId} in hubspot account ${hubspotId}`);
 
   try {
     // Use the `executeFeatureAction` function to execute the feature
-    const result = await executeFeatureAction(userId, hubspotId, featureId, req);
+    const result = await executeFeatureAction(userId, hubspotId, featureId, req, isWebhook);
 
     // Send a response based on the result
     switch (result) {
