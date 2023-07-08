@@ -2,8 +2,8 @@
 const { getUserIdByPortalId } = require('../../firebase/firebaseAdmin');
 
 const eventToFeatureMap = {
-  'contact.created': 'feature1',
-  'contact.updated': 'feature2',
+  'contact.created': ['feature1', 'feature2'],
+  'contact.updated': ['feature3'],
   // ...
 };
 
@@ -13,16 +13,15 @@ exports.webhookEvents = async (req, res) => {
 
   if (req.body[0]) {
     const portalId = String(req.body[0].portalId);
-    const eventType = req.body[0].subscriptionType; // Assuming subscriptionType is at req.body[0].subscriptionType
-    const featureId = eventToFeatureMap[subscriptionType];
+    const subscriptionType = req.body[0].subscriptionType; // Assuming subscriptionType is at req.body[0].subscriptionType
+    const featureIds = eventToFeatureMap[subscriptionType]; // This is now an array of feature IDs
     console.log('portalId', portalId);
 
     // Get userId by portalId
     const userId = await getUserIdByPortalId(portalId);
 
-    if (featureId) {
+    if (featureIds && featureIds.length) {
       // Create a mock request and response object to be used in the pluginExecution function
-      const mockReq = { params: { userId, hubspotId: portalId, featureId } };
       const mockRes = {
         status: function () {
           return this;
@@ -35,10 +34,15 @@ exports.webhookEvents = async (req, res) => {
         },
       };
 
-      // Call pluginExecution function
-      await pluginExecution(mockReq, mockRes, true);
+      // Iterate over featureIds and execute each one
+      for (const featureId of featureIds) {
+        const mockReq = { params: { userId, hubspotId: portalId, featureId } };
+
+        // Call pluginExecution function
+        await pluginExecution(mockReq, mockRes, true);
+      }
     } else {
-      console.log(`No feature mapped for event ${eventType}`);
+      console.log(`No feature mapped for event ${subscriptionType}`);
     }
   }
 };
