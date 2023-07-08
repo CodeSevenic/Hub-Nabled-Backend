@@ -36,7 +36,7 @@ exports.webhookEvents = async (req, res) => {
 
       // Iterate over featureIds and execute each one
       for (const featureId of featureIds) {
-        const mockReq = { params: { userId, hubspotId: portalId, featureId } };
+        const mockReq = { params: { userId, hubspotId: portalId, featureId }, body: req.body }; // Pass req.body here
 
         // In the webhookEvents function, before calling pluginExecution
         console.log(
