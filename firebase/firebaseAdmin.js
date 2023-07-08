@@ -108,6 +108,20 @@ const getAppByName = async (appName) => {
   }
 };
 
+const getUserIdByPortalId = async (portalId) => {
+  try {
+    const portalUserMappingDoc = await db.collection('portalUserMappings').doc(portalId).get();
+    if (portalUserMappingDoc.exists) {
+      const data = portalUserMappingDoc.data();
+      return data.userId;
+    } else {
+      throw new Error('No user found for this portalId');
+    }
+  } catch (error) {
+    console.error(`Failed to get userId by portalId: `, error.message);
+  }
+};
+
 // Get user by document ID
 const getUserById = async (userId) => {
   // console.log('getUserById: ', userId);
@@ -175,4 +189,5 @@ module.exports = {
   getUserByEmail,
   getAppTokens,
   deleteUserAppAuth,
+  getUserIdByPortalId,
 };
