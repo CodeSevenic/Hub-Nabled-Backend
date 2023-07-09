@@ -6,12 +6,6 @@ const phoneNumberFormatter = require('../phoneNumberFormatter');
 const unknownContactNameCreator = require('../unknownContactNameCreator');
 
 exports.featuresList = {
-  contacts: {
-    name: 'Fetch Hubspot Contacts',
-    function: fetchHubSpotContacts,
-    description: "Fetches contacts from a user's HubSpot account",
-    featureId: 'contacts',
-  },
   nameFormatter: {
     name: 'Hubspot Contact Name Formatter',
     function: nameFormatter,
@@ -32,18 +26,6 @@ exports.featuresList = {
     description:
       'A cutting-edge solution designed to extract and format first and last names from contact emails. With this innovative tool, you can automatically generate accurate contact names by analyzing email addresses.',
     featureId: 'unknownContactNameCreator',
-  },
-  deals: {
-    name: 'Deals Explorer',
-    function: fetchHubSpotContacts,
-    description: "Fetches deals from a user's HubSpot account",
-    featureId: 'deals',
-  },
-  lists: {
-    name: 'List View',
-    function: fetchHubSpotContacts,
-    description: "Fetches lists from a user's HubSpot account",
-    featureId: 'lists',
   },
   createObjectSchema: {
     name: 'Object Schema Creator',
