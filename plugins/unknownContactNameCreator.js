@@ -89,7 +89,7 @@ const fetchAllContacts = async (accessToken) => {
   return allContacts;
 };
 
-const contactNameCreator = async (userId, portalId, req, isWebhook) => {
+const unknownContactNameCreator = async (userId, portalId, req, isWebhook) => {
   console.log('isWebhook', isWebhook);
   const authorized = await isAuthorized(userId, portalId);
 
@@ -124,8 +124,8 @@ const contactNameCreator = async (userId, portalId, req, isWebhook) => {
       });
     }
   } catch (error) {
-    console.log('contactNameCreator error: ', error.message);
+    console.log('unknownContactNameCreator error: ', error.message);
   }
 };
 
-module.exports = contactNameCreator;
+module.exports = unknownContactNameCreator;

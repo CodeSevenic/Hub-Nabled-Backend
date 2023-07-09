@@ -3,6 +3,7 @@ const { createObjectSchema } = require('../createObjectSchema');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
 const phoneNumberFormatter = require('../phoneNumberFormatter');
+const unknownContactNameCreator = require('../unknownContactNameCreator');
 
 exports.featuresList = {
   contacts: {
@@ -24,6 +25,13 @@ exports.featuresList = {
     description:
       "A powerful solution designed to streamline your contact management process. With this innovative tool, you can effortlessly format phone numbers in HubSpot using either the contact's own IP country code or a selected default country for all your contacts.",
     featureId: 'phoneNumberFormatter',
+  },
+  unknownContactNameCreator: {
+    name: 'Unknown Contact Name Creator',
+    function: unknownContactNameCreator,
+    description:
+      'A cutting-edge solution designed to extract and format first and last names from contact emails. With this innovative tool, you can automatically generate accurate contact names by analyzing email addresses.',
+    featureId: 'unknownContactNameCreator',
   },
   deals: {
     name: 'Deals Explorer',
