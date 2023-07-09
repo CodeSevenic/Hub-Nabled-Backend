@@ -2,6 +2,7 @@
 const { createObjectSchema } = require('../createObjectSchema');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
+const phoneNumberFormatter = require('../phoneNumberFormatter');
 
 exports.featuresList = {
   contacts: {
@@ -19,7 +20,7 @@ exports.featuresList = {
   },
   phoneNumberFormatter: {
     name: 'Phone Number Formatter',
-    function: nameFormatter,
+    function: phoneNumberFormatter,
     description:
       "A powerful solution designed to streamline your contact management process. With this innovative tool, you can effortlessly format phone numbers in HubSpot using either the contact's own IP country code or a selected default country for all your contacts.",
     featureId: 'phoneNumberFormatter',
