@@ -11,10 +11,18 @@ exports.featuresList = {
     featureId: 'contacts',
   },
   nameFormatter: {
-    name: 'Hubspot name Formatter',
+    name: 'Hubspot Contact Name Formatter',
     function: nameFormatter,
-    description: "Formats contacts from a user's HubSpot account",
+    description:
+      "Like the HubSpot Contact Number Formatter, this specialized solution is tailored to optimize your contact management within a specific list in HubSpot. Effortlessly format phone numbers based on the contact's IP country code or a selected default country.",
     featureId: 'nameFormatter',
+  },
+  phoneNumberFormatter: {
+    name: 'Phone Number Formatter',
+    function: nameFormatter,
+    description:
+      "A powerful solution designed to streamline your contact management process. With this innovative tool, you can effortlessly format phone numbers in HubSpot using either the contact's own IP country code or a selected default country for all your contacts.",
+    featureId: 'phoneNumberFormatter',
   },
   deals: {
     name: 'Deals Explorer',
