@@ -2,8 +2,8 @@
 const { getUserIdByPortalId } = require('../../firebase/firebaseAdmin');
 
 const eventToFeatureMap = {
-  'contact.created': ['nameFormatter', 'unknownContactNameCreator'],
-  'contact.propertyChange': ['nameFormatter', 'phoneNumberFormatter'],
+  'contact.creation': ['nameFormatter', 'unknownContactNameCreator'],
+  'contact.propertyChange': ['nameFormatter', 'phoneNumberFormatter', 'unknownContactNameCreator'],
   // ...
 };
 
