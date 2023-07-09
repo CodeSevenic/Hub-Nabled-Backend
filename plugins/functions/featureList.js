@@ -42,7 +42,7 @@ exports.featuresList = {
     featureId: 'createContactAndCustomObject',
   },
   contactNameFormatterLimiterToList: {
-    name: 'Create Contact and Custom Object',
+    name: 'HubSpot Contact Number Formatter (Limit to List)',
     function: contactNameFormatterLimiterToList,
     description:
       'Effortlessly update and standardize contact names by removing special characters, consolidating multiple first names, adding missing surnames where possible, and proper capitalization. Perfect for maintaining consistent and professional contact data.',
