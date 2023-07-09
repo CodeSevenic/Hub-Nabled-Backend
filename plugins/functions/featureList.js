@@ -1,4 +1,5 @@
-﻿const { createContactAndCustomObject } = require('../createContactAndCustomObject');
+﻿const contactNameFormatterLimiterToList = require('../contactNameFormatterLimitToList');
+const { createContactAndCustomObject } = require('../createContactAndCustomObject');
 const { createObjectSchema } = require('../createObjectSchema');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
@@ -39,6 +40,13 @@ exports.featuresList = {
     description:
       'Create a contact and associate it with a custom object in your connected HubSpot portal',
     featureId: 'createContactAndCustomObject',
+  },
+  contactNameFormatterLimiterToList: {
+    name: 'Create Contact and Custom Object',
+    function: contactNameFormatterLimiterToList,
+    description:
+      'Effortlessly update and standardize contact names by removing special characters, consolidating multiple first names, adding missing surnames where possible, and proper capitalization. Perfect for maintaining consistent and professional contact data.',
+    featureId: 'contactNameFormatterLimiterToList',
   },
   // Add other feature-function mappings here...
 };
