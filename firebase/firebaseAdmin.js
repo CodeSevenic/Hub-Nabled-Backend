@@ -25,8 +25,8 @@ const createCustomTokenInFirebase = async (uid) => {
 
 // Function to verify user's identity in Firebase
 const verifyUserInFirebase = async (email, password) => {
-  const userRecord = await admin.auth().getUserByEmail(email);
-  return userRecord;
+  const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+  return userCredential.user;
 };
 
 // Store authentications under a user account

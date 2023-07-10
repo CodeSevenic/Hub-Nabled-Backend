@@ -143,15 +143,17 @@ exports.register = async (req, res) => {
       email: email,
     });
 
-    // Logging in the user after successful registration
-    const customToken = await createCustomTokenInFirebase(userRecord.uid);
+    // Get user data
+    const userData = await db.collection('users').doc(userRecord.uid).get();
 
     res.status(200).json({
-      status: true,
       message: 'User registered successfully',
-      userId: userRecord.uid,
-      email,
-      token: customToken,
+      userId: userData.id,
+      isAdmin: userData.data().isAdmin ? userData.data().isAdmin : false,
+      isLoggedIn: true,
+      username: userData.data().username,
+      appAuths: userData.data().appAuths ? userData.data().appAuths : {},
+      features: userData.data().features ? userData.data().features : {},
     });
   } catch (error) {
     res
@@ -165,23 +167,26 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("Login request received for user's email: ", email, ' and password: ', password);
+
     // Verify the user identity in Firebase
     const userRecord = await verifyUserInFirebase(email, password);
 
-    // Generate a custom token
-    const customToken = await createCustomTokenInFirebase(userRecord.uid);
+    // Get user data
+    const userData = await db.collection('users').doc(userRecord.uid).get();
 
-    const user = await db.collection('users').doc(userRecord.uid).get();
-
-    if (!user.exists) {
+    if (!userData.exists) {
       throw new Error('No user data found in Firestore');
     }
 
     res.status(200).json({
       message: 'User logged in successfully',
-      userId: userRecord.uid,
-      username: user.data().username,
-      token: customToken,
+      userId: userData.id,
+      isAdmin: userData.data().isAdmin ? userData.data().isAdmin : false,
+      isLoggedIn: true,
+      username: userData.data().username,
+      appAuths: userData.data().appAuths ? userData.data().appAuths : {},
+      features: userData.data().features ? userData.data().features : {},
     });
   } catch (error) {
     res.status(500).json({ message: 'User login failed', error: error.message });
