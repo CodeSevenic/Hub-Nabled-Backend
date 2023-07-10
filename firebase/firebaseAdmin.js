@@ -8,6 +8,27 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// Function to create user in Firebase
+const createUserInFirebase = async (email, password) => {
+  const userRecord = await admin.auth().createUser({
+    email: email,
+    password: password,
+  });
+  return userRecord;
+};
+
+// Function to create custom token in Firebase
+const createCustomTokenInFirebase = async (uid) => {
+  const customToken = await admin.auth().createCustomToken(uid);
+  return customToken;
+};
+
+// Function to verify user's identity in Firebase
+const verifyUserInFirebase = async (email, password) => {
+  const userRecord = await admin.auth().getUserByEmail(email);
+  return userRecord;
+};
+
 // Store authentications under a user account
 const storeUserAppAuth = async (
   userId,
@@ -190,4 +211,7 @@ module.exports = {
   getAppTokens,
   deleteUserAppAuth,
   getUserIdByPortalId,
+  createUserInFirebase,
+  createCustomTokenInFirebase,
+  verifyUserInFirebase,
 };
