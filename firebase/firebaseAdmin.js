@@ -23,10 +23,10 @@ const createCustomTokenInFirebase = async (uid) => {
   return customToken;
 };
 
-// Function to verify user's identity in Firebase
-const verifyUserInFirebase = async (email, password) => {
-  const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-  return userCredential.user;
+// Verify the Firebase ID token in the request
+const verifyIdTokenInFirebase = async (idToken) => {
+  const decodedToken = await admin.auth().verifyIdToken(idToken);
+  return (uid = decodedToken.uid); // The Firebase user ID
 };
 
 // Store authentications under a user account
@@ -213,5 +213,5 @@ module.exports = {
   getUserIdByPortalId,
   createUserInFirebase,
   createCustomTokenInFirebase,
-  verifyUserInFirebase,
+  verifyIdTokenInFirebase,
 };

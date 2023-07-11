@@ -8,6 +8,7 @@ const {
   createUserInFirebase,
   createCustomTokenInFirebase,
   verifyUserInFirebase,
+  verifyIdTokenInFirebase,
 } = require('../firebase/firebaseAdmin');
 
 // function for user registration API
@@ -165,20 +166,20 @@ exports.register = async (req, res) => {
 // Function for user login API
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const idToken = req.body.idToken;
 
-    console.log("Login request received for user's email: ", email, ' and password: ', password);
+    // Verify the Firebase ID token in the request
+    const verifiedToken = await verifyIdTokenInFirebase(idToken);
+    // const decodedToken = await admin.auth().verifyIdToken(idToken);
+    // const uid = decodedToken.uid; // The Firebase user ID
 
-    // Verify the user identity in Firebase
-    const userRecord = await verifyUserInFirebase(email, password);
-
-    // Get user data
-    const userData = await db.collection('users').doc(userRecord.uid).get();
+    // Get user data from Firestore
+    const userData = await db.collection('users').doc(verifiedToken).get();
 
     if (!userData.exists) {
       throw new Error('No user data found in Firestore');
     }
-
+    console.log('Login successfully');
     res.status(200).json({
       message: 'User logged in successfully',
       userId: userData.id,
@@ -189,6 +190,14 @@ exports.login = async (req, res) => {
       features: userData.data().features ? userData.data().features : {},
     });
   } catch (error) {
-    res.status(500).json({ message: 'User login failed', error: error.message });
+    if (error.code === 'auth/id-token-expired') {
+      res.status(401).json({ message: 'Token expired. Please log in again.' });
+    } else if (error.code === 'auth/id-token-revoked') {
+      res.status(401).json({ message: 'Token has been revoked. Please log in again.' });
+    } else if (error.code === 'auth/argument-error') {
+      res.status(400).json({ message: 'Invalid ID token.' });
+    } else {
+      res.status(500).json({ message: 'User login failed', error: error.message });
+    }
   }
 };
