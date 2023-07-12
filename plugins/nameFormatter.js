@@ -11,16 +11,32 @@ const limiter = new Bottleneck({
 async function formatContact(id, firstName, lastName, accessToken) {
   const formatName = (name) => {
     if (typeof name === 'string' && name.length > 0) {
-      return name
+      // Check if name is already properly formatted
+      if (/^[A-Z][a-z]*( [A-Z][a-z]*)*$/.test(name)) {
+        return name;
+      }
+
+      // Remove special characters and numbers
+      name = name.replace(/[^a-zA-Z ]/g, '');
+
+      // Split the name into parts and capitalize each one
+      let nameParts = name
         .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase());
+
+      // Join the parts back together
+      name = nameParts.join(' ');
     }
     return name;
   };
 
   const newName = formatName(firstName);
   const newLastName = formatName(lastName);
+
+  // Skip if nothing to change
+  if (newName === firstName && newLastName === lastName) {
+    return;
+  }
 
   try {
     await axios.patch(
