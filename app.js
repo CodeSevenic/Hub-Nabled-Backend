@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-// sendWelcomeEmail('sevenicbookings@gmail.com');
+sendWelcomeEmail('sevenicbookings@gmail.com');
 
 // API routes
 const apps = require('./routes/apps');
