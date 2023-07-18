@@ -42,73 +42,87 @@ const storeUserAppAuth = async (
   // Convert portalId to string
   portalId = String(portalId);
 
-  // Get the user document reference
-  const userDoc = db.doc(`users/${userId}`);
+  try {
+    // Get the user document reference
+    const userDoc = db.doc(`users/${userId}`);
 
-  // Fetch the document and check if it exists
-  const docSnapshot = await userDoc.get();
-  if (docSnapshot.exists) {
-    const userData = docSnapshot.data();
+    // Fetch the document and check if it exists
+    const docSnapshot = await userDoc.get();
+    if (docSnapshot.exists) {
+      const userData = docSnapshot.data();
 
-    // Create or update 'appAuths' object
-    let appAuths = userData.appAuths || {};
+      // Create or update 'appAuths' object
+      let appAuths = userData.appAuths || {};
 
-    // Update the 'appAuths' object with new or existing portalId
-    appAuths[portalId] = {
-      ...additionalFields,
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      expiresIn: tokens.expires_in,
-      issuedAt: issuedAt,
-      ...appPortalInfo,
-    };
+      // Update the 'appAuths' object with new or existing portalId
+      appAuths[portalId] = {
+        ...additionalFields,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiresIn: tokens.expires_in,
+        issuedAt: issuedAt,
+        ...appPortalInfo,
+      };
 
-    // If the document exists, update it with the 'appAuths' object.
-    await userDoc.set({ appAuths }, { merge: true });
+      // If the document exists, update it with the 'appAuths' object.
+      await userDoc.set({ appAuths }, { merge: true });
 
-    if (userData.appAuths && userData.appAuths[portalId]) {
-      console.log(`       > App ${portalId} updated for user ${userId}`);
+      if (userData.appAuths && userData.appAuths[portalId]) {
+        console.log(`       > App ${portalId} updated for user ${userId}`);
+      } else {
+        console.log(`       > App ${portalId} added to user ${userId}`);
+      }
+
+      // Additionally, update the portal-to-user mapping
+      const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
+      await portalUserMapping.set({ userId }, { merge: true });
+      console.log(`       > PortalUserMapping for portal ${portalId} updated`);
     } else {
-      console.log(`       > App ${portalId} added to user ${userId}`);
+      throw new Error(`User ${userId} does not exist`);
     }
-
-    // Additionally, update the portal-to-user mapping
-    const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
-    await portalUserMapping.set({ userId }, { merge: true });
-    console.log(`       > PortalUserMapping for portal ${portalId} updated`);
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error storing app auth for user ${userId} and portal ${portalId}`);
   }
 };
 
 // Delete authentications under a user account
 const deleteUserAppAuth = async (userId, portalId) => {
   console.log('deleteUserAppAuth Running...');
-  // Get the user document reference
-  const userDoc = db.doc(`users/${userId}`);
+  try {
+    // Get the user document reference
+    const userDoc = db.doc(`users/${userId}`);
 
-  // Fetch the document and check if it exists
-  const docSnapshot = await userDoc.get();
-  if (docSnapshot.exists) {
-    const userData = docSnapshot.data();
+    // Fetch the document and check if it exists
+    const docSnapshot = await userDoc.get();
+    if (docSnapshot.exists) {
+      const userData = docSnapshot.data();
 
-    // Check if 'appAuths' object exists
-    let appAuths = userData.appAuths || {};
+      // Check if 'appAuths' object exists
+      let appAuths = userData.appAuths || {};
 
-    if (appAuths && appAuths[portalId]) {
-      // Delete the appAuth object with the provided portalId
-      delete appAuths[portalId];
+      if (appAuths && appAuths[portalId]) {
+        // Delete the appAuth object with the provided portalId
+        delete appAuths[portalId];
 
-      // If the document exists, update it with the 'appAuths' object.
-      await userDoc.update({ appAuths });
+        // If the document exists, update it with the 'appAuths' object.
+        await userDoc.update({ appAuths });
 
-      console.log(`       > App ${portalId} deleted from user ${userId}`);
+        console.log(`       > App ${portalId} deleted from user ${userId}`);
 
-      // Additionally, delete the portal-to-user mapping
-      const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
-      await portalUserMapping.delete();
-      console.log(`       > PortalUserMapping for portal ${portalId} deleted`);
+        // Additionally, delete the portal-to-user mapping
+        const portalUserMapping = db.collection('portalUserMappings').doc(portalId);
+        await portalUserMapping.delete();
+        console.log(`       > PortalUserMapping for portal ${portalId} deleted`);
+      } else {
+        console.log(`       > App ${portalId} does not exist in user ${userId}`);
+      }
     } else {
-      console.log(`       > App ${portalId} does not exist in user ${userId}`);
+      throw new Error(`User ${userId} does not exist`);
     }
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error deleting app auth for user ${userId} and portal ${portalId}`);
   }
 };
 

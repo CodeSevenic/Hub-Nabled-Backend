@@ -24,41 +24,55 @@ const { app } = require('firebase-admin');
 // Redirect the user from the installation page to
 // the authorization URL
 const handleInstall = async (req, res) => {
-  // get the app name from the query parameter
-  const appName = req.query.appName;
-  console.log('appName: ', appName);
-  // save the app name to the session
-  req.session.appName = appName;
-  // get the app by name from Firebase
-  const app = await getAppByName(appName);
-  // save the app credentials to the session
-  const clientId = app.clientId;
-  const clientSecret = app.clientSecret;
-  const scopes = app.scopes.split(/ |, ?|%20/).join(' ');
-  // save the app credentials to the session
-  req.session.clientId = clientId;
-  req.session.clientSecret = clientSecret;
-  req.session.scopes = scopes;
+  try {
+    // get the app name from the query parameter
+    const appName = req.query.appName;
+    console.log('appName: ', appName);
+    if (!appName) {
+      throw new Error('App name not found in request');
+    }
+    // save the app name to the session
+    req.session.appName = appName;
+    // get the app by name from Firebase
+    const app = await getAppByName(appName);
+    if (!app) {
+      throw new Error('App not found in Firebase');
+    }
+    // save the app credentials to the session
+    const clientId = app.clientId;
+    const clientSecret = app.clientSecret;
+    const scopes = app.scopes.split(/ |, ?|%20/).join(' ');
+    // save the app credentials to the session
+    req.session.clientId = clientId;
+    req.session.clientSecret = clientSecret;
+    req.session.scopes = scopes;
 
-  console.log('app: ', app);
-  // save the app id to the session
-  req.session.appId = app.appId;
+    console.log('app: ', app);
+    // save the app id to the session
+    req.session.appId = app.appId;
 
-  console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
-  console.log("===>Step 1: Redirecting user to your app's OAuth URL");
-  // Get the userId from the query parameter
-  const userId = req.query.userId;
+    console.log('=== Initiating OAuth 2.0 flow with HubSpot ===');
+    console.log("===>Step 1: Redirecting user to your app's OAuth URL");
+    // Get the userId from the query parameter
+    const userId = req.query.userId;
+    if (!userId) {
+      throw new Error('User ID not found in request');
+    }
 
-  console.log('userId: ', userId);
+    console.log('userId: ', userId);
 
-  const authUrl =
-    'https://app.hubspot.com/oauth/authorize' +
-    `?client_id=${encodeURIComponent(clientId)}` +
-    `&scope=${encodeURIComponent(scopes)}` +
-    `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-    `&state=${encodeURIComponent(userId)}`;
-  res.redirect(authUrl);
-  console.log('===> Step 2: User is being prompted for consent by HubSpot');
+    const authUrl =
+      'https://app.hubspot.com/oauth/authorize' +
+      `?client_id=${encodeURIComponent(clientId)}` +
+      `&scope=${encodeURIComponent(scopes)}` +
+      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+      `&state=${encodeURIComponent(userId)}`;
+    res.redirect(authUrl);
+    console.log('===> Step 2: User is being prompted for consent by HubSpot');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 };
 
 // Step 2
@@ -70,56 +84,65 @@ const handleInstall = async (req, res) => {
 // Receive the authorization code from the OAuth 2.0 Server,
 // and process it based on the query parameters that are passed
 const handleOauthCallback = async (req, res) => {
-  // Get the userId from the query parameter state
-  const userId = req.query.state;
-  const appName = req.session.appName;
-  const appId = req.session.appId;
-  // Get the app credentials from the session
-  const clientId = req.session.clientId;
-  const clientSecret = req.session.clientSecret;
+  try {
+    // Get the userId from the query parameter state
+    const userId = req.query.state;
+    const appName = req.session.appName;
+    const appId = req.session.appId;
+    // Get the app credentials from the session
+    const clientId = req.session.clientId;
+    const clientSecret = req.session.clientSecret;
 
-  if (appName && appId) {
-    console.log('appId from session: ', appName);
-    console.log('appName from session: ', appId);
-  } else {
-    console.log('appId is undefined');
-  }
-
-  console.log('===> Step 3: Handling the request sent by the server');
-  // Received a user authorization code, so now combine that with the other
-  // required values and exchange both for an access token and a refresh token
-  if (req.query.code) {
-    console.log('       > Received an authorization token');
-
-    const authCodeProof = {
-      grant_type: 'authorization_code',
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: REDIRECT_URI,
-      code: req.query.code,
-    };
-
-    const appSecrets = {
-      clientId: req.session.clientId,
-      clientSecret: req.session.clientSecret,
-      scopes: req.session.scopes,
-    };
-
-    // Exchange the authorization code for an access token and refresh token
-    console.log('===> Step 4: Exchanging authorization code for an access token and refresh token');
-    const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
-
-    if (tokens.message) {
-      return res.redirect(`/error?msg=${tokens.message}`);
+    if (appName && appId) {
+      console.log('appId from session: ', appName);
+      console.log('appName from session: ', appId);
+    } else {
+      console.log('appId is undefined');
     }
 
-    // Get the userId and appName from the query param
-    console.log('userId: ', userId);
+    console.log('===> Step 3: Handling the request sent by the server');
+    // Received a user authorization code, so now combine that with the other
+    // required values and exchange both for an access token and a refresh token
+    if (req.query.code) {
+      console.log('       > Received an authorization token');
 
-    // Once the tokens have been retrieved, use them to make a query
-    // to the HubSpot API
-    // redirect to the frontend
-    res.redirect(`http://localhost:3000/oauth-complete`);
+      const authCodeProof = {
+        grant_type: 'authorization_code',
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: REDIRECT_URI,
+        code: req.query.code,
+      };
+
+      const appSecrets = {
+        clientId: req.session.clientId,
+        clientSecret: req.session.clientSecret,
+        scopes: req.session.scopes,
+      };
+
+      // Exchange the authorization code for an access token and refresh token
+      console.log(
+        '===> Step 4: Exchanging authorization code for an access token and refresh token'
+      );
+      const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
+
+      if (tokens.message) {
+        return res.redirect(`/error?msg=${tokens.message}`);
+      }
+
+      // Get the userId and appName from the query param
+      console.log('userId: ', userId);
+
+      // Once the tokens have been retrieved, use them to make a query
+      // to the HubSpot API
+      // redirect to the frontend
+      res.redirect(`http://localhost:3000/oauth-complete`);
+    } else {
+      throw new Error('Authorization code not found in request');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 };
 
