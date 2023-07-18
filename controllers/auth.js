@@ -1,4 +1,4 @@
-﻿const { generateUniqueID } = require('../../hb-frontend/src/utils/idGenerator');
+﻿const { generateUniqueID } = require('../utils/idGenerator');
 const { comparePassword, hashPassword } = require('../utils/password-util');
 const {
   db,
