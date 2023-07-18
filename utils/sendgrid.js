@@ -1,13 +1,16 @@
 ﻿const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-function sendEmail({ to, subject, templateId, dynamicTemplateData }) {
+function sendEmail({ to, subject, templateId, dynamicTemplateData, text, html, attachments }) {
   const msg = {
     to,
     from: process.env.SENDGRID_EMAIL, // Change to your verified sender
     subject,
+    text,
+    html,
     templateId,
     dynamicTemplateData,
+    attachments,
   };
 
   sgMail
