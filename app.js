@@ -4,7 +4,7 @@ const opn = require('open');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { default: axios } = require('axios');
-
+const { sendWelcomeEmail } = require('./utils/sendgrid');
 const app = express();
 const { PORT } = require('./config');
 
@@ -30,6 +30,8 @@ app.use(
     },
   })
 );
+
+// sendWelcomeEmail('sevenicbookings@gmail.com');
 
 // API routes
 const apps = require('./routes/apps');

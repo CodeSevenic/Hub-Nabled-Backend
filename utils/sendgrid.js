@@ -1,5 +1,12 @@
 ﻿const sgMail = require('@sendgrid/mail');
+const { welcomeHtml } = require('./emailTemplate');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+console.log('SENDGRID_API_KEY: ', process.env.SENDGRID_API_KEY);
 
 function sendEmail({ to, subject, templateId, dynamicTemplateData, text, html, attachments }) {
   const msg = {
@@ -23,10 +30,7 @@ function sendWelcomeEmail(to) {
   sendEmail({
     to,
     subject: 'Welcome!',
-    templateId: 'your_welcome_template_id',
-    dynamicTemplateData: {
-      /* Your dynamic data for template */
-    },
+    html: welcomeHtml,
   });
 }
 
