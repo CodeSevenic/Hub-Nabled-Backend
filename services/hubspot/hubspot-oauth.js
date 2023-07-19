@@ -164,7 +164,7 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
 
     const tokens = responseBody.data;
 
-    // const issuedAt = generateExpiryTimestamp(tokens.expires_in);
+    const issuedAt = generateExpiryTimestamp(tokens.expires_in);
 
     // Get HubSpot portal info
     const tokenInfo = await axios.get(
