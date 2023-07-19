@@ -6,6 +6,7 @@ const {
   getAppByName,
   getUserById,
   getAppTokens,
+  validatePortalUserId,
 } = require('../../firebase/firebaseAdmin');
 
 const { REDIRECT_URI } = require('../../config');
@@ -126,6 +127,12 @@ const handleOauthCallback = async (req, res) => {
       );
       const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
 
+      console.log('tokens: ', tokens);
+
+      if (tokens === 'Existing portal') {
+        res.redirect(`http://localhost:3000/error-existing-portal`);
+      }
+
       if (tokens.message) {
         return res.redirect(`/error?msg=${tokens.message}`);
       }
@@ -169,6 +176,18 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
       hubDomain: tokenInfo.data.hub_domain,
       hubUserEmail: tokenInfo.data.user,
     };
+
+    const isNewUserAndPortal = await validatePortalUserId(appPortalInfo.portalId, userId);
+
+    console.log('isNewUserAndPortal: ', isNewUserAndPortal);
+
+    if (isNewUserAndPortal === false) {
+      console.log('       > Existing portal');
+      return 'Existing portal';
+    } else {
+      console.log('       > New  portal');
+      return 'New portal';
+    }
 
     // store user app auth by updating the user document in Firebase
     await storeUserAppAuth(

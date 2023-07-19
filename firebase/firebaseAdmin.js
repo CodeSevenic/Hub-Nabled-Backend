@@ -216,6 +216,31 @@ const getAppTokens = (userApps, appName = undefined) => {
   }
 };
 
+// Validate the portalId and userId
+const validatePortalUserId = async (portalId, userId) => {
+  portalId = String(portalId);
+
+  console.log('PortalId: ', portalId, 'UserId: ', userId);
+  try {
+    const portalUserMappingDoc = await db.collection('portalUserMappings').doc(portalId).get();
+    if (portalUserMappingDoc.exists) {
+      const data = portalUserMappingDoc.data();
+      if (data.userId === userId) {
+        return true; // The given userId matches the one in the document
+      } else {
+        return false; // The given userId doesn't match the one in the document
+      }
+    } else {
+      // if portalId doesn't exist in the DB, then it's a new portalId
+      // in this case, we allow the userId to be used with this new portalId
+      return true;
+    }
+  } catch (error) {
+    console.error(`Failed to validate portalId and userId: `, error.message);
+    return false;
+  }
+};
+
 module.exports = {
   db,
   storeUserAppAuth,
@@ -228,4 +253,5 @@ module.exports = {
   createUserInFirebase,
   createCustomTokenInFirebase,
   verifyIdTokenInFirebase,
+  validatePortalUserId,
 };
