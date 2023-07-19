@@ -4,9 +4,11 @@ import { useStateContext } from '../contexts/ContextProvider';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStateContext } from '../contexts/AuthContext';
 import { BiSolidLock } from 'react-icons/bi';
+import UpGradePopup from './Popup/upgradePopup';
 
 const AddAccount = () => {
   const [apps, setApps] = useState([]);
+  const [popup, setPopup] = useState(false);
   const { authPopup, setAuthPopup } = useStateContext();
   const [paid, setPaid] = useState(false);
   const { authAccountDeleted, hubSpotIds, handleDeleteAccount, setIsLoggedIn } =
@@ -21,6 +23,14 @@ const AddAccount = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const closePopup = () => {
+    setPopup(false);
+  };
+
+  const upgradePopup = () => {
+    setPopup(true);
   };
 
   const installApp = (app) => {
@@ -70,17 +80,20 @@ const AddAccount = () => {
   }, []);
 
   return (
-    <button
-      className="text-white font-semibold text-sm w-fit m-3 flex gap-2 items-center mt-8 mb-5 bg-btn1 px-5 py-2 rounded-xl ml-2  hover:shadow-lg transition-all duration-300"
-      onClick={() => installApp(apps[0])}
-    >
-      <span>Connect HubSpot Account</span>
-      {!paid && hubSpotIds.length > 0 && (
-        <span>
-          <BiSolidLock />
-        </span>
-      )}
-    </button>
+    <>
+      <UpGradePopup isOpen={popup} onRequestClose={closePopup} />
+      <button
+        className="text-white font-semibold text-sm w-fit m-3 flex gap-2 items-center mt-8 mb-5 bg-btn1 px-5 py-2 rounded-xl ml-2  hover:shadow-lg transition-all duration-300"
+        onClick={() => (!paid && hubSpotIds.length > 0 ? upgradePopup() : installApp(apps[0]))}
+      >
+        <span>Connect HubSpot Account</span>
+        {!paid && hubSpotIds.length > 0 && (
+          <span>
+            <BiSolidLock />
+          </span>
+        )}
+      </button>
+    </>
   );
 };
 
