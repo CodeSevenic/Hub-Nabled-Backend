@@ -131,7 +131,7 @@ exports.logout = async (req, res) => {
 // Function for user registration API
 exports.register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, phone } = req.body;
 
     // Create user in Firebase Auth
     const userRecord = await createUserInFirebase(email, password);
@@ -142,6 +142,7 @@ exports.register = async (req, res) => {
     await db.collection('users').doc(userRecord.uid).set({
       username: username,
       email: email,
+      phone: phone,
     });
 
     // Get user data
