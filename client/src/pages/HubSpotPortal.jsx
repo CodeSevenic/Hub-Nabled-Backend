@@ -114,7 +114,7 @@ const HubSpotPortal = () => {
           />
         )}
         <section className="px-4 pt-10 md:pt-0 flex flex-wrap gap-5 justify-between">
-          <h2 className="text-[12px] font-semibold text-gray-600 dark:text-[#c7c7d7]">
+          <h2 className="text-[12px] font-semibold text-gray-600 dark:text-gray-200">
             HS Portal: {id}
           </h2>
         </section>
@@ -132,10 +132,10 @@ const HubSpotPortal = () => {
               return (
                 <div
                   key={index}
-                  className="bg-white dark:bg-[#6d6d7a] flex flex-col justify-center p-5 shadow-lg  rounded-3xl relative overflow-hidden"
+                  className="bg-white dark:bg-secondary-dark-bg flex flex-col justify-center p-5 shadow-lg  rounded-3xl relative overflow-hidden"
                 >
                   {isLoading && <LoadingSpinner />}
-                  <h4 className="dark:text-[#c7c7d7] font-semibold text-gray-500 flex items-center gap-4">
+                  <h4 className="dark:text-gray-200 font-semibold text-gray-500 flex items-center gap-4">
                     <span>
                       <PiPlugsConnectedBold className="text-btn2" />
                     </span>
@@ -179,16 +179,16 @@ const HubSpotPortal = () => {
             return (
               <div
                 key={index}
-                className="bg-white dark:bg-[#6d6d7a]  flex flex-col shadow-lg justify-center p-5  rounded-3xl relative overflow-hidden"
+                className="bg-white dark:bg-secondary-dark-bg  flex flex-col shadow-lg justify-center p-5  rounded-3xl relative overflow-hidden"
               >
                 {isLoading && <LoadingSpinner />}
-                <h4 className=" font-semibold dark:text-[#c7c7d7] text-gray-500 flex items-center gap-4">
+                <h4 className=" font-semibold dark:text-gray-200 text-gray-500 flex items-center gap-4">
                   <span>
                     <PiPlugBold className="text-btn1" />
                   </span>
                   {feature.name}
                 </h4>
-                <p className="my-4 flex-grow dark:text-[#dbdbdb] text-gray-500">
+                <p className="my-4 flex-grow dark:text-gray-400 text-gray-500">
                   {feature.description}
                 </p>
                 <div className="flex gap-5">
