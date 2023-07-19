@@ -36,6 +36,7 @@ import OauthComplete from './components/OauthComplete';
 import { useAuthStateContext } from './contexts/AuthContext';
 import NoPortalsAdded from './components/NoPortalsAdded';
 import PasswordReset from './pages/Auth/PasswordReset';
+import ErrorExistingPortal from './components/ErrorExistingPortal';
 
 const App = () => {
   const { setCurrentColor, setCurrentMode, currentMode, activeMenu, themeSettings } =
@@ -94,6 +95,7 @@ const App = () => {
             <Route index element={<PasswordReset />} />
           </Route>
           <Route path="/oauth-complete" element={<OauthComplete />} />
+          <Route path="/error-existing-portal" element={<ErrorExistingPortal />} />
           <Route
             path="*"
             element={

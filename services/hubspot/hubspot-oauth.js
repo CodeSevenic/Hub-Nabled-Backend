@@ -130,7 +130,7 @@ const handleOauthCallback = async (req, res) => {
       console.log('tokens: ', tokens);
 
       if (tokens === 'Existing portal') {
-        res.redirect(`http://localhost:3000/error-existing-portal`);
+        return res.redirect(`http://localhost:3000/error-existing-portal`);
       }
 
       if (tokens.message) {
@@ -143,7 +143,7 @@ const handleOauthCallback = async (req, res) => {
       // Once the tokens have been retrieved, use them to make a query
       // to the HubSpot API
       // redirect to the frontend
-      res.redirect(`http://localhost:3000/oauth-complete`);
+      return res.redirect(`http://localhost:3000/oauth-complete`);
     } else {
       throw new Error('Authorization code not found in request');
     }
@@ -184,9 +184,6 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
     if (isNewUserAndPortal === false) {
       console.log('       > Existing portal');
       return 'Existing portal';
-    } else {
-      console.log('       > New  portal');
-      return 'New portal';
     }
 
     // store user app auth by updating the user document in Firebase
