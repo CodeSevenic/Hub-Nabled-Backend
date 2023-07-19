@@ -1,11 +1,10 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { GoDotFill } from 'react-icons/go';
 import { PiPlugBold, PiPlugsConnectedBold } from 'react-icons/pi';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import FeatureToggle from '../components/FeatureToggle/FeatureToggle';
 import Popup from '../components/Popup/Popup';
 import { useAuthStateContext } from '../contexts/AuthContext';
-import NoPortalsAdded from '../components/NoPortalsAdded';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import DeletingAccountLoading from '../components/LoadingSpinner/deletingAccount';
 

@@ -33,7 +33,8 @@ const UpGradePopup = ({ isOpen, onRequestClose }) => {
           <span className="text-2xl font-medium">Upgrade to YuboData Enterprise</span>
         </h3>
         <p className="text-xl mt-5 px-10">
-          To add more Hubspot accounts, you need to upgrade to YuboData Enterprise.
+          With YuboData Enterprise, you gain the ability to add more Hubspot accounts, thus
+          broadening your possibilities and enhancing your data management capabilities.
         </p>
         <button className="px-5 bg-btn1 py-2 mt-10 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-300">
           Upgrade to Enterprise
