@@ -127,8 +127,6 @@ const handleOauthCallback = async (req, res) => {
       );
       const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
 
-      console.log('tokens: ', tokens);
-
       if (tokens === 'Existing portal') {
         return res.redirect(`http://localhost:3000/error-existing-portal`);
       }
@@ -136,9 +134,6 @@ const handleOauthCallback = async (req, res) => {
       if (tokens.message) {
         return res.redirect(`/error?msg=${tokens.message}`);
       }
-
-      // Get the userId and appName from the query param
-      console.log('userId: ', userId);
 
       // Once the tokens have been retrieved, use them to make a query
       // to the HubSpot API

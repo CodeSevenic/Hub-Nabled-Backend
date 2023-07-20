@@ -13,7 +13,7 @@ const Popup = ({ isOpen, onRequestClose, feature, portalId }) => {
   console.log('feature', feature, portalId);
   return (
     <Modal
-      className="max-w-xl min-h-590  bg-gray-100 rounded-lg overflow-hidden  mx-auto my-32 text-center relative"
+      className="max-w-xl min-h-590 dark:bg-secondary-dark-bg  bg-gray-100 rounded-lg overflow-hidden  mx-auto my-32 text-center relative"
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Feature Modal"

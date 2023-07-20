@@ -8,11 +8,13 @@ import avatar from '../data/avatar.jpg';
 import { useAuthStateContext } from '../contexts/AuthContext';
 
 const UserProfile = () => {
-  const { currentColor } = useStateContext();
+  const { currentColor, isClicked, setIsClicked, initialState } = useStateContext();
   const { setIsLoggedIn } = useAuthStateContext();
 
   const handleLogout = async (e) => {
+    setIsClicked(initialState);
     e.preventDefault();
+    console.log('isClicked:', isClicked);
     try {
       const response = await fetch('http://localhost:4000/api/logout', {
         method: 'POST',
@@ -24,6 +26,7 @@ const UserProfile = () => {
       if (response.ok) {
         console.log('Logout successful');
         // clear prevUrl from localStorage
+
         sessionStorage.clear();
         setIsLoggedIn(false);
       } else {

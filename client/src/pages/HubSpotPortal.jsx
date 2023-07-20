@@ -181,7 +181,7 @@ const HubSpotPortal = () => {
                 className="bg-white dark:bg-secondary-dark-bg  flex flex-col shadow-lg justify-center p-5  rounded-3xl relative overflow-hidden"
               >
                 {isLoading && <LoadingSpinner />}
-                <h4 className=" font-semibold dark:text-gray-200 text-gray-500 flex items-center gap-4">
+                <h4 className=" font-semibold dark:text-gray-200 text-gray-500 flex items-center text-xl gap-4">
                   <span>
                     <PiPlugBold className="text-btn1" />
                   </span>
