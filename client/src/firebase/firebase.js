@@ -22,6 +22,7 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
+// Handle login with email and password
 const loginWithEmailAndPassword = async (email, password) => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   const idToken = await getIdToken(userCredential.user);
