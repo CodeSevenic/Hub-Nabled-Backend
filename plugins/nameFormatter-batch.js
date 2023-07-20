@@ -8,23 +8,16 @@ const limiter = new Bottleneck({
   minTime: 500, // minimum time between job starts is 500ms
 });
 
-async function formatContact(id, firstName, lastName, accessToken) {
+async function formatContact(id, firstName, lastName) {
   const formatName = (name) => {
     if (typeof name === 'string' && name.length > 0) {
-      // Check if name is already properly formatted
       if (/^[A-Z][a-z]*( [A-Z][a-z]*)*$/.test(name)) {
         return name;
       }
-
-      // Remove special characters and numbers
       name = name.replace(/[^a-zA-Z ]/g, '');
-
-      // Split the name into parts and capitalize each one
       let nameParts = name
         .split(' ')
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase());
-
-      // Join the parts back together
       name = nameParts.join(' ');
     }
     return name;
@@ -35,18 +28,23 @@ async function formatContact(id, firstName, lastName, accessToken) {
 
   // Skip if nothing to change
   if (newName === firstName && newLastName === lastName) {
-    return;
+    return null;
   }
 
+  return {
+    id: id,
+    properties: {
+      firstname: newName,
+      lastname: newLastName,
+    },
+  };
+}
+
+const updateContactsBatch = async (contacts, accessToken) => {
   try {
-    await axios.patch(
-      `https://api.hubapi.com/crm/v3/objects/contacts/${id}`,
-      {
-        properties: {
-          firstname: newName,
-          lastname: newLastName,
-        },
-      },
+    await axios.post(
+      `https://api.hubapi.com/crm/v3/objects/contacts/batch/update`,
+      { inputs: contacts },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -55,9 +53,9 @@ async function formatContact(id, firstName, lastName, accessToken) {
       }
     );
   } catch (error) {
-    console.error('Failed to update contact: ', error.message);
+    console.error('Failed to update contacts batch: ', error.message);
   }
-}
+};
 
 const fetchAllContacts = async (accessToken) => {
   console.log('=== Retrieving all contacts from HubSpot using the access token ===');
@@ -65,7 +63,6 @@ const fetchAllContacts = async (accessToken) => {
   let allContacts = [];
   let keepGoing = true;
 
-  // Keep making requests until all contacts are retrieved
   while (keepGoing) {
     try {
       const headers = {
@@ -78,11 +75,8 @@ const fetchAllContacts = async (accessToken) => {
       }`;
 
       const { data } = await axios.get(url, { headers });
-
-      // Add the retrieved contacts to the 'allContacts' array
       allContacts = [...allContacts, ...data.results];
 
-      // If there's a next page, prepare to fetch it in the next loop iteration
       if (data.paging && data.paging.next) {
         after = data.paging.next.after;
       } else {
@@ -111,6 +105,8 @@ const nameFormatter = async (userId, portalId, req, isWebhook) => {
 
     if (isWebhook == true) {
       const webhooksEvent = req.body;
+      const contactsToUpdate = [];
+
       for (const event of webhooksEvent) {
         const contactId = event.objectId;
         let firstname = null;
@@ -122,18 +118,35 @@ const nameFormatter = async (userId, portalId, req, isWebhook) => {
           lastname = event.propertyValue;
         }
 
-        await formatContact(contactId, firstname, lastname, accessToken);
+        const contactUpdate = await formatContact(contactId, firstname, lastname);
+        if (contactUpdate) {
+          contactsToUpdate.push(contactUpdate);
+        }
+      }
+
+      // Perform batch update
+      if (contactsToUpdate.length > 0) {
+        await limiter.schedule(() => updateContactsBatch(contactsToUpdate, accessToken));
       }
     } else {
-      // Fetch all contacts with pagination
       const allContacts = await fetchAllContacts(accessToken);
+      const contactsToUpdate = [];
 
-      // Use the rate limiter to update the contacts
-      allContacts.forEach((element) => {
+      for (const element of allContacts) {
         const firstname = element.properties ? element.properties.firstname : null;
         const lastname = element.properties ? element.properties.lastname : null;
-        limiter.schedule(() => formatContact(element.id, firstname, lastname, accessToken));
-      });
+        const contactUpdate = await formatContact(element.id, firstname, lastname);
+
+        if (contactUpdate) {
+          contactsToUpdate.push(contactUpdate);
+        }
+      }
+
+      // Perform batch updates
+      while (contactsToUpdate.length > 0) {
+        const batch = contactsToUpdate.splice(0, 100);
+        await limiter.schedule(() => updateContactsBatch(batch, accessToken));
+      }
     }
   } catch (error) {
     console.log('nameFormatter error: ', error.message);
