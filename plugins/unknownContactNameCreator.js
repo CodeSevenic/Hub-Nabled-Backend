@@ -136,7 +136,7 @@ const unknownContactNameCreator = async (userId, portalId, req, isWebhook) => {
   }
 
   try {
-    const accessToken = await getAccessToken(userId, portalId);
+    // const accessToken = await getAccessToken(userId, portalId);
 
     if (isWebhook == true) {
       const webhooksEvent = req.body;
