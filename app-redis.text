@@ -1,0 +1,79 @@
+﻿const express = require('express');
+const rateLimit = require('express-rate-limit');
+const RedisStore = require('rate-limit-redis');
+const redis = require('redis');
+const session = require('express-session');
+const opn = require('open');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const { default: axios } = require('axios');
+const { sendWelcomeEmail } = require('./utils/sendgrid');
+const app = express();
+const { PORT } = require('./config');
+
+const redisClient = redis.createClient(process.env.REDIS_URL);
+
+redisClient.on("error", function(error) {
+  console.error("Error connecting to Redis:", error);
+});
+
+// Set CORS headers
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // Replace with your frontend origin
+    methods: ['GET', 'POST'],
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+// Use a session to keep track of client ID
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET, // This should be a long and complex string
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
+  })
+);
+
+// Express Rate Limit
+const limiter = rateLimit({
+  store: new RedisStore({
+    client: redisClient,
+  }),
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // limit each IP to 100 requests per windowMs
+  keyGenerator: function (req /*, res*/) {
+    // Assuming the portalID is stored in the session
+    return req.session.portalID || req.ip;
+  },
+  handler: function (req, res /*, next*/) {
+    res.status(429).json({ message: 'Too many requests, please try again later.' });
+  }
+});
+
+app.use(limiter);
+
+// API routes
+const apps = require('./routes/apps');
+const authRoutes = require('./routes/auth');
+const featuresRoutes = require('./routes/features');
+const pluginExecutionRoutes = require('./routes/pluginExecution');
+const firebase = require('./routes/firebase');
+const hubSpotWebhooks = require('./routes/webhooksExecution');
+
+app.use('/api/', authRoutes);
+app.use('/api/', apps);
+app.use('/api/', featuresRoutes);
+app.use('/api/', pluginExecutionRoutes);
+app.use('/api/', firebase);
+app.use('/api/', hubSpotWebhooks);
+
+app.listen(PORT, () => console.log(`=== Starting your app on http://localhost:${PORT} ===`));
+// opn(`http://localhost:${PORT}/api/`);
