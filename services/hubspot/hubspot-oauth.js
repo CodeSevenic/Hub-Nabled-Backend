@@ -28,7 +28,6 @@ const handleInstall = async (req, res) => {
   try {
     // get the app name from the query parameter
     const appName = req.query.appName;
-    console.log('appName: ', appName);
     if (!appName) {
       throw new Error('App name not found in request');
     }
@@ -174,10 +173,7 @@ const exchangeForTokens = async (userId, exchangeProof, additionalFields = {}) =
 
     const isNewUserAndPortal = await validatePortalUserId(appPortalInfo.portalId, userId);
 
-    console.log('isNewUserAndPortal: ', isNewUserAndPortal);
-
     if (isNewUserAndPortal === false) {
-      console.log('       > Existing portal');
       return 'Existing portal';
     }
 
