@@ -31,19 +31,37 @@ async function formatContact(id, email, accessToken) {
     let updatedFirstName = firstName;
     let updatedLastName = lastName;
 
-    if (!firstName || firstName === '') {
-      let potentialFirstName = email.split('@')[0].split('.')[0];
+    // Split the email local-part on either period, dash or underscore
+    const emailParts = email.split('@')[0].split(/[\._-]/);
+
+    // Check for email addresses without any special characters or more than two parts
+    if (emailParts.length === 1 || emailParts.length > 2) {
+      let potentialFirstName = emailParts.slice(0, -1).join(' '); // join all parts except the last one
+      let potentialLastName = emailParts[emailParts.length - 1]; // use the last part as the last name
       if (potentialFirstName) {
         potentialFirstName = potentialFirstName.replace(/[^a-zA-Z]/g, '');
         updatedFirstName = potentialFirstName.charAt(0).toUpperCase() + potentialFirstName.slice(1);
       }
-    }
-
-    if (!lastName || lastName === '') {
-      let potentialLastName = email.split('@')[0].split('.')[1];
       if (potentialLastName) {
         potentialLastName = potentialLastName.replace(/[^a-zA-Z]/g, '');
         updatedLastName = potentialLastName.charAt(0).toUpperCase() + potentialLastName.slice(1);
+      }
+    } else {
+      if (!firstName || firstName === '') {
+        let potentialFirstName = emailParts[0];
+        if (potentialFirstName) {
+          potentialFirstName = potentialFirstName.replace(/[^a-zA-Z]/g, '');
+          updatedFirstName =
+            potentialFirstName.charAt(0).toUpperCase() + potentialFirstName.slice(1);
+        }
+      }
+
+      if (!lastName || lastName === '') {
+        let potentialLastName = emailParts[1];
+        if (potentialLastName) {
+          potentialLastName = potentialLastName.replace(/[^a-zA-Z]/g, '');
+          updatedLastName = potentialLastName.charAt(0).toUpperCase() + potentialLastName.slice(1);
+        }
       }
     }
 
