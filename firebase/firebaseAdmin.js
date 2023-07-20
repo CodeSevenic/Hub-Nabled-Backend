@@ -241,6 +241,24 @@ const validatePortalUserId = async (portalId, userId) => {
   }
 };
 
+// Check if portalId exists
+const doesPortalExist = async (portalId) => {
+  console.log('Checking PortalId: ', portalId);
+  try {
+    const portalDoc = await db.collection('portalUserMappings').doc(portalId).get();
+    if (!portalDoc.exists) {
+      console.log(`PortalId does not exist in the database: `, portalId);
+      return false;
+    } else {
+      console.log(`PortalId exists in the database: `, portalId);
+      return true;
+    }
+  } catch (error) {
+    console.error(`Failed to check portalId existence: `, error.message);
+    return false;
+  }
+};
+
 module.exports = {
   db,
   storeUserAppAuth,
@@ -254,4 +272,5 @@ module.exports = {
   createCustomTokenInFirebase,
   verifyIdTokenInFirebase,
   validatePortalUserId,
+  doesPortalExist,
 };
