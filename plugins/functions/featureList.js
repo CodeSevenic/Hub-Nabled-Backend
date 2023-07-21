@@ -1,6 +1,7 @@
 ﻿const contactNameFormatterLimiterToList = require('../contactNameFormatterLimitToList');
 const { createContactAndCustomObject } = require('../createContactAndCustomObject');
 const { createObjectSchema } = require('../createObjectSchema');
+const { dataUploader } = require('../dataUploader');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
 const phoneNumberFormatter = require('../phoneNumberFormatter');
@@ -47,6 +48,13 @@ exports.featuresList = {
     description:
       'Effortlessly update and standardize contact names by removing special characters, consolidating multiple first names, adding missing surnames where possible, and proper capitalization. Perfect for maintaining consistent and professional contact data.',
     featureId: 'contactNameFormatterLimiterToList',
+  },
+  dataUploader: {
+    name: 'Data Uploader',
+    function: dataUploader,
+    description:
+      'Effortlessly upload data to your connected HubSpot portal. Perfect for bulk uploading contacts, companies, deals, tickets, and more. Supports mapping custom fields and handling duplicate records.',
+    featureId: 'dataUploader',
   },
   // Add other feature-function mappings here...
 };

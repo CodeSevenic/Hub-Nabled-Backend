@@ -32,6 +32,10 @@
   background-color: transparent !important;
 }
 
+.ReactModalPortal .ReactModal__Overlay {
+  position: absolute !important;
+}
+
 /* color-picker style  */
 
 #preview {

@@ -16,7 +16,8 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+
 app.use(cookieParser());
 // Use a session to keep track of client ID
 app.use(
@@ -30,8 +31,6 @@ app.use(
     },
   })
 );
-
-// sendWelcomeEmail('sevenicbookings@gmail.com');
 
 // API routes
 const apps = require('./routes/apps');

@@ -5,6 +5,7 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 import ExecuteFeatureButton from '../ExecuteFeatureButton/ExecuteFeatureButton';
 import CreateObjectSchemaForm from '../Plugins/CreateObjectSchemaForm';
 import CreateContactAndCustomObject from '../Plugins/CreateContactAndCustomObject';
+import DataUploader from '../Plugins/DataUploader';
 
 Modal.setAppElement('#root'); // Replace '#root' with the id of your root element if it's different
 
@@ -30,7 +31,7 @@ const Popup = ({ isOpen, onRequestClose, feature, portalId }) => {
           className="absolute text-2xl translate-y-[-50%] top-[50%] right-6 text-white cursor-pointer"
         />
       </div>
-      <div className="flex flex-col h-full px-4 overflow-y-auto max-h-[600px]">
+      <div className="flex flex-col h-full px-4 overflow-y-auto">
         <div className="grow mb-8">
           <p className="mt-4">{feature.description}</p>
         </div>
@@ -66,6 +67,8 @@ const Popup = ({ isOpen, onRequestClose, feature, portalId }) => {
               hubspotId={portalId}
               featureId={feature.featureId}
             />
+          ) : feature.featureId === 'dataUploader' ? (
+            <DataUploader userId={userId} hubspotId={portalId} featureId={feature.featureId} />
           ) : (
             'No Plugin Component'
           )
