@@ -54,13 +54,13 @@ const Popup = ({ isOpen, onRequestClose, feature, portalId }) => {
               hubspotId={portalId}
               featureId={feature.featureId}
             />
-          ) : feature.featureId === 4 ? (
+          ) : feature.featureId === 'phoneNumberFormatter' ? (
             <ExecuteFeatureButton
               userId={userId}
               hubspotId={portalId}
               featureId={feature.featureId}
             />
-          ) : feature.featureId === 5 ? (
+          ) : feature.featureId === 'unknownContactNameCreator' ? (
             <ExecuteFeatureButton
               userId={userId}
               hubspotId={portalId}
