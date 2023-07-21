@@ -78,7 +78,7 @@ const dataUploader = async (userId, portalId, request) => {
   const fieldMappings = request.body.fieldMappings;
 
   console.log('jsonData: ', jsonData);
-  console.log('fieldMappings: ', fieldMappings);
+  // console.log('fieldMappings: ', fieldMappings);
 
   // try {
   //   const authorized = await isAuthorized(userId, portalId);
