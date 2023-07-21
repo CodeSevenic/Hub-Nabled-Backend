@@ -3,7 +3,6 @@ import { useDropzone } from 'react-dropzone';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import ExecuteFeatureButton from '../ExecuteFeatureButton/ExecuteFeatureButton';
 
 const hubspotPropertyNames = ['firstname', 'lastname', 'phone', 'website']; // This can be fetched dynamically
 
