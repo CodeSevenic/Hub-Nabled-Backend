@@ -38,7 +38,7 @@ const authRoutes = require('./routes/auth');
 const featuresRoutes = require('./routes/features');
 const pluginExecutionRoutes = require('./routes/pluginExecution');
 const firebase = require('./routes/firebase');
-// const hubSpotWebhooks = require('./routes/webhooksExecution');
+const hubSpotWebhooks = require('./routes/webhooksExecution');
 
 app.use('/api/', authRoutes);
 app.use('/api/', apps);
