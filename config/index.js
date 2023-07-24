@@ -4,6 +4,8 @@ dotenv.config();
 
 const PORT = 4000;
 
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
 const config = {
   CLIENT_ID: process.env.APP1_CLIENT_ID,
   HUBSPOT_API_KEY: process.env.HUBSPOT_API_KEY,
