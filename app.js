@@ -22,7 +22,7 @@ if (NODE_ENV === 'DEV') {
   );
 }
 
-// app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 app.use(cookieParser());
 // Use a session to keep track of client ID
