@@ -56,7 +56,7 @@ const handleInstall = async (req, res) => {
     // Get the userId from the query parameter
     const userId = req.query.userId;
     if (!userId) {
-      // throw new Error('User ID not found in request');
+      throw new Error('User ID not found in request');
     }
 
     console.log('userId: ', userId);
