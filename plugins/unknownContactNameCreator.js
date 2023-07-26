@@ -70,6 +70,8 @@ async function formatContact(id, email, accessToken) {
       updatedLastName = '';
     }
 
+    console.log('updatedFirstName', updatedFirstName, 'updatedLastName', updatedLastName);
+
     // Update contact
     await axios.patch(
       `https://api.hubapi.com/crm/v3/objects/contacts/${id}`,

@@ -11,18 +11,30 @@ const limiter = new Bottleneck({
 async function formatContact(id, firstName, lastName, accessToken) {
   const formatName = (name) => {
     if (typeof name === 'string' && name.length > 0) {
-      // Check if name is already properly formatted
-      if (/^[A-Z][a-z]*( [A-Z][a-z]*)*$/.test(name)) {
-        return name;
+      // Handle names inside brackets
+      if (/^\(.*\)$/.test(name)) {
+        name = name.replace(/[\(\)]/g, ''); // Remove brackets
       }
 
-      // Remove special characters and numbers
-      name = name.replace(/[^a-zA-Z ]/g, '');
+      // Remove numbers and special characters excluding dot
+      name = name.replace(/[0-9]/g, ''); // Remove numbers
+      name = name.replace(/[^a-zA-Z .]/g, ''); // Remove special characters
 
-      // Split the name into parts and capitalize each one
-      let nameParts = name
-        .split(' ')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase());
+      // Handle prefixes and capitalize each name part
+      let nameParts = name.split(' ').map((part) => {
+        const lowerCasePart = part.toLowerCase();
+
+        // List of common prefixes
+        const prefixes = ['dr.', 'mr.', 'mrs.', 'ms.', 'prof.', 'sir'];
+
+        // If the part is a prefix, preserve the casing
+        if (prefixes.includes(lowerCasePart)) {
+          return part;
+        }
+
+        // Capitalize the first letter and make the rest lowercase
+        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      });
 
       // Join the parts back together
       name = nameParts.join(' ');

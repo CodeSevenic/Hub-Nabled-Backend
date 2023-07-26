@@ -6,6 +6,7 @@ import ExecuteFeatureButton from '../ExecuteFeatureButton/ExecuteFeatureButton';
 import CreateObjectSchemaForm from '../Plugins/CreateObjectSchemaForm';
 import CreateContactAndCustomObject from '../Plugins/CreateContactAndCustomObject';
 import DataUploader from '../Plugins/DataUploader';
+import PhoneNumberFormatter from '../Plugins/PhoneNumberFormatter';
 
 Modal.setAppElement('#root'); // Replace '#root' with the id of your root element if it's different
 
@@ -56,7 +57,7 @@ const Popup = ({ isOpen, onRequestClose, feature, portalId }) => {
               featureId={feature.featureId}
             />
           ) : feature.featureId === 'phoneNumberFormatter' ? (
-            <ExecuteFeatureButton
+            <PhoneNumberFormatter
               userId={userId}
               hubspotId={portalId}
               featureId={feature.featureId}

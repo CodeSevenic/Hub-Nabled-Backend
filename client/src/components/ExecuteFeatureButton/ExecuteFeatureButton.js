@@ -23,7 +23,7 @@ const ExecuteFeatureButton = ({ userId, hubspotId, featureId, postData }) => {
       className="bg-btn2 rounded-xl max-w-fit mx-auto mt-5 mb-10 flex gap-3 items-center py-2 px-8 text-white"
       onClick={executeFeature}
     >
-      <FaPlay className="text-[12px]" /> Run Plugin
+      <FaPlay className="text-[12px]" /> Re-run Plugin
     </button>
   );
 };

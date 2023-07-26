@@ -2,7 +2,7 @@
 const { pluginExecution } = require('../../controllers/pluginExecution');
 const { getUserIdByPortalId, doesPortalExist } = require('../../firebase/firebaseAdmin');
 const eventToFeatureMap = {
-  'contact.creation': ['unknownContactNameCreator'],
+  'contact.creation': ['unknownContactNameCreator', 'nameFormatter'],
   'contact.propertyChange': ['nameFormatter', 'phoneNumberFormatter', 'unknownContactNameCreator'],
   // ...
 };
@@ -15,6 +15,12 @@ exports.webhookEvents = async (req, res) => {
 
       if (portalId === '21666725' || portalId === '21520785') {
         console.log('Skipping portalId 21666725 or 21520785');
+        return;
+      }
+
+      // if changeSource is not CRM_UI skip
+      if (req.body[0].changeSource !== 'CRM_UI') {
+        console.log('Skipping changeSource', req.body[0].changeSource);
         return;
       }
 

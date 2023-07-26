@@ -1,9 +1,18 @@
 ﻿var admin = require('firebase-admin');
 
-var serviceAccount = require('../env/hub-nabled-firebase-adminsdk-z9tzu-4de95eb8bc.json');
-
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert({
+    type: process.env.ADMIN_TYPE,
+    projectId: process.env.ADMIN_PROJECT_ID,
+    privateKeyId: process.env.ADMIN_PRIVATE_KEY_ID,
+    privateKey: process.env.ADMIN_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    clientEmail: process.env.ADMIN_CLIENT_EMAIL,
+    clientId: process.env.ADMIN_CLIENT_ID,
+    authUri: process.env.ADMIN_AUTH_URI,
+    tokenUri: process.env.ADMIN_TOKEN_URI,
+    authProviderX509CertUrl: process.env.ADMIN_AUTH_PROVIDER_X509_CERT_URL,
+    clientC509CertUrl: process.env.ADMIN_CLIENT_X509_CERT_URL,
+  }),
 });
 
 const db = admin.firestore();
@@ -259,6 +268,41 @@ const doesPortalExist = async (portalId) => {
   }
 };
 
+// Update or set a new entry in Firestore
+// Update or set a new entry in Firestore
+const updateSelectedCountry = async (hubspotId, countryCode) => {
+  try {
+    await db.collection('portalUserMappings').doc(hubspotId).set(
+      {
+        selectedCountry: countryCode,
+      },
+      { merge: true }
+    );
+    console.log(`Successfully updated user ${hubspotId} with country ${countryCode}`);
+  } catch (error) {
+    console.error(`Error updating user ${hubspotId}: ${error.message}`);
+    throw error; // Propagate error so caller can handle it if they want
+  }
+};
+
+const getSelectedCountry = async (hubspotId) => {
+  try {
+    const userDoc = await db.collection('portalUserMappings').doc(hubspotId).get();
+
+    if (!userDoc.exists) {
+      const error = new Error(`User ${hubspotId} does not exist`);
+      console.error(error.message);
+      throw error; // Propagate error so caller can handle it if they want
+    } else {
+      const selectedCountry = userDoc.data().selectedCountry || null;
+      return selectedCountry;
+    }
+  } catch (error) {
+    console.error(`Error retrieving user ${hubspotId}: ${error.message}`);
+    throw error; // Propagate error so caller can handle it if they want
+  }
+};
+
 module.exports = {
   db,
   storeUserAppAuth,
@@ -273,4 +317,6 @@ module.exports = {
   verifyIdTokenInFirebase,
   validatePortalUserId,
   doesPortalExist,
+  updateSelectedCountry,
+  getSelectedCountry,
 };
