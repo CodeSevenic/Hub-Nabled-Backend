@@ -45,7 +45,7 @@ const App = () => {
   const { authAccountDeleted, hubSpotIds, setIsLoggedIn, handleDeleteAccount } =
     useAuthStateContext();
 
-  console.log('HubSpotIds: ', hubSpotIds);
+  console.log('NAME: ', process.env.REACT_APP_NAME);
 
   // useEffect function to handle messages from the OAuth window
   useEffect(() => {

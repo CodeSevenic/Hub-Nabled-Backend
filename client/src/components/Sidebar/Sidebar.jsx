@@ -30,7 +30,7 @@ const Sidebar = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('data: ', data);
+        // console.log('data: ', data);
         setUserData(data);
         setHubSpotIds(Object.keys(data.appAuths));
       })
@@ -41,7 +41,7 @@ const Sidebar = () => {
     fetchUserAuths();
   }, [authPopup, authAccountDeleted]);
 
-  console.log('authAccountDeleted: ', authAccountDeleted);
+  // console.log('authAccountDeleted: ', authAccountDeleted);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
