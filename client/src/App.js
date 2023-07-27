@@ -38,6 +38,7 @@ import NoPortalsAdded from './components/NoPortalsAdded';
 import PasswordReset from './pages/Auth/PasswordReset';
 import ErrorExistingPortal from './components/ErrorExistingPortal';
 import DataUploader from './components/Plugins/DataUploader';
+import baseURL from './url';
 
 const App = () => {
   const { setCurrentColor, setCurrentMode, currentMode, activeMenu, themeSettings } =
@@ -45,7 +46,7 @@ const App = () => {
   const { authAccountDeleted, hubSpotIds, setIsLoggedIn, handleDeleteAccount } =
     useAuthStateContext();
 
-  console.log('NAME: ', process.env.REACT_APP_NAME);
+  console.log('NAME: ', baseURL);
 
   // useEffect function to handle messages from the OAuth window
   useEffect(() => {
@@ -53,7 +54,7 @@ const App = () => {
       setIsLoggedIn(true);
     }
     const handleMessage = (event) => {
-      const expectedOrigin = 'http://localhost:3000'; // Replace with your expected origin
+      const expectedOrigin = process.env.REACT_APP_ENV === 'DEV' ? 'http://localhost:3000' : '/'; // Replace with your expected origin
 
       if (event.origin !== expectedOrigin) {
         console.warn('Received message from untrusted origin, ignoring.');
