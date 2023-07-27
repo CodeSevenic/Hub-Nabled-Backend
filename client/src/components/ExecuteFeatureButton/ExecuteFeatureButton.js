@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import axios from 'axios';
 import { FaPlay } from 'react-icons/fa';
+import baseURL from '../../url';
 
 const ExecuteFeatureButton = ({ userId, hubspotId, featureId, postData }) => {
   const [isExecuting, setIsExecuting] = React.useState(false);
@@ -9,7 +10,7 @@ const ExecuteFeatureButton = ({ userId, hubspotId, featureId, postData }) => {
     console.log('Props', featureId, userId, hubspotId, postData);
     try {
       const response = await axios.post(
-        `http://localhost:4000/api/execute-feature/${userId}/${hubspotId}/${featureId}`,
+        `${baseURL}/api/execute-feature/${userId}/${hubspotId}/${featureId}`,
         postData // passed as the body of the POST request
       );
 

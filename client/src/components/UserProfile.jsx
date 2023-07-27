@@ -6,6 +6,7 @@ import { userProfileData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
 import avatar from '../data/avatar.jpg';
 import { useAuthStateContext } from '../contexts/AuthContext';
+import baseURL from '../url';
 
 const UserProfile = () => {
   const { currentColor, isClicked, setIsClicked, initialState } = useStateContext();
@@ -16,7 +17,7 @@ const UserProfile = () => {
     e.preventDefault();
     console.log('isClicked:', isClicked);
     try {
-      const response = await fetch('http://localhost:4000/api/logout', {
+      const response = await fetch(`${baseURL}/api/logout`, {
         method: 'POST',
         credentials: 'include',
         headers: {

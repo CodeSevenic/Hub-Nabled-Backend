@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStateContext } from '../contexts/AuthContext';
 import { BiSolidLock } from 'react-icons/bi';
 import UpGradePopup from './Popup/upgradePopup';
+import baseURL from '../url';
 
 const AddAccount = () => {
   const [apps, setApps] = useState([]);
@@ -18,7 +19,7 @@ const AddAccount = () => {
   // Fetch apps from backend
   const fetchApps = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/apps');
+      const response = await axios.get(`${baseURL}/api/apps`);
       setApps(response.data);
     } catch (error) {
       console.error(error);
@@ -37,7 +38,7 @@ const AddAccount = () => {
     setAuthPopup(false);
     console.log('App: ', app);
     const userId = sessionStorage.getItem('userId');
-    const redirectUri = 'http://localhost:4000/api/install';
+    const redirectUri = `${baseURL}/api/install`;
     const url = `${redirectUri}?app_id=${app.appId}&userId=${userId}&appName=${app.appName}`;
 
     // Store the window reference

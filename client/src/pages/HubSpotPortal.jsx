@@ -7,6 +7,7 @@ import Popup from '../components/Popup/Popup';
 import { useAuthStateContext } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import DeletingAccountLoading from '../components/LoadingSpinner/deletingAccount';
+import baseURL from '../url';
 
 const HubSpotPortal = () => {
   const { id } = useParams();
@@ -55,7 +56,7 @@ const HubSpotPortal = () => {
   const fetchAllFeatures = async () => {
     try {
       // Fetch all features
-      const response = await fetch('http://localhost:4000/api/all-features');
+      const response = await fetch(`${baseURL}/api/all-features`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -77,7 +78,7 @@ const HubSpotPortal = () => {
   const fetchEnabledFeatures = async () => {
     try {
       // Fetch enabled features
-      const response = await fetch(`http://localhost:4000/api/enabled-features/${userId}/${id}`);
+      const response = await fetch(`${baseURL}/api/enabled-features/${userId}/${id}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

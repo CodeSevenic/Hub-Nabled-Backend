@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
+import baseURL from '../../url';
 
 const hubspotPropertyNames = ['firstname', 'lastname', 'phone', 'website']; // This can be fetched dynamically
 
@@ -52,7 +53,7 @@ const DataUploader = ({ userId, hubspotId, featureId }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:4000/api/execute-feature/${userId}/${hubspotId}/${featureId}`,
+        `${baseURL}/api/execute-feature/${userId}/${hubspotId}/${featureId}`,
         {
           jsonData,
           fieldMappings,

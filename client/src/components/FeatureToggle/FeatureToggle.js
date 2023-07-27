@@ -1,11 +1,12 @@
 ﻿import React from 'react';
 import axios from 'axios'; // HTTP client for the browser and Node.js
+import baseURL from '../../url';
 
 const FeatureToggle = ({ userId, featureName, portalId, isEnabled, disabled, onToggle }) => {
   const toggleFeature = async () => {
     try {
       // Send a request to the server to toggle the feature
-      const response = await axios.post(`http://localhost:4000/api/toggle-feature`, {
+      const response = await axios.post(`${baseURL}/api/toggle-feature`, {
         userId: userId,
         featureName: featureName,
         isEnabled: !isEnabled,

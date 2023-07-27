@@ -11,6 +11,7 @@ import Logo from '../../assets/images/Artboard.png';
 import { useAuthStateContext } from '../../contexts/AuthContext';
 import { MdAccountTree } from 'react-icons/md';
 import AddAccount from '../AddAccount';
+import baseURL from '../../url';
 
 const Sidebar = () => {
   const { currentColor, activeMenu, setActiveMenu, screenSize, authPopup } = useStateContext();
@@ -20,7 +21,7 @@ const Sidebar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(true);
   const userId = sessionStorage.getItem('userId');
   const fetchUserAuths = () => {
-    fetch(`http://localhost:4000/api/user-auths/${userId}`, {
+    fetch(`${baseURL}/api/user-auths/${userId}`, {
       credentials: 'include',
     })
       .then((response) => {

@@ -1,5 +1,6 @@
 ﻿import React, { useState, createContext, useContext } from 'react';
 import { loginWithEmailAndPassword } from '../firebase/firebase';
+import baseURL from '../url';
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
@@ -32,7 +33,7 @@ export const AuthContextProvider = ({ children }) => {
     try {
       localStorage.removeItem('prevUrl');
       console.log('Login: email: ', email);
-      const response = await fetch('http://localhost:4000/api/login', {
+      const response = await fetch(`${baseURL}/api/login`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -78,7 +79,7 @@ export const AuthContextProvider = ({ children }) => {
   const register = async (username, email, password, phone) => {
     localStorage.removeItem('prevUrl');
     console.log('Register: email: ', email);
-    const response = await fetch('http://localhost:4000/api/register', {
+    const response = await fetch(`${baseURL}/api/register`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -125,16 +126,13 @@ export const AuthContextProvider = ({ children }) => {
   const handleDeleteAccount = async (userId, portalId) => {
     setDeletingAccount(true);
     try {
-      const res = await fetch(
-        `http://localhost:4000/api/delete-account-auth/${userId}/${portalId}`,
-        {
-          method: 'POST', // Specify the method
-          headers: {
-            'Content-Type': 'application/json', // Set the content type to be JSON
-          },
-          credentials: 'include', // Include credentials for sessions
-        }
-      );
+      const res = await fetch(`${baseURL}/api/delete-account-auth/${userId}/${portalId}`, {
+        method: 'POST', // Specify the method
+        headers: {
+          'Content-Type': 'application/json', // Set the content type to be JSON
+        },
+        credentials: 'include', // Include credentials for sessions
+      });
 
       if (!res.ok) {
         setDeletingAccount(false);

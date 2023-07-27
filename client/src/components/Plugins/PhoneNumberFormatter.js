@@ -4,6 +4,7 @@ import countries from 'i18n-iso-countries';
 import axios from 'axios'; // npm install axios if you haven't installed it yet.
 import 'i18n-iso-countries/langs/en.json';
 import ExecuteFeatureButton from '../ExecuteFeatureButton/ExecuteFeatureButton';
+import baseURL from '../../url';
 
 countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
 
@@ -18,7 +19,7 @@ const PhoneNumberFormatter = ({ userId, hubspotId, featureId }) => {
   useEffect(() => {
     const fetchSelectedCountry = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/select-country/${hubspotId}`);
+        const response = await axios.get(`${baseURL}/api/select-country/${hubspotId}`);
         if (response.data.selectedCountry) {
           const countryCode = response.data.selectedCountry;
           setSelectedCountry({ value: countryCode, label: countries.getName(countryCode, 'en') });
@@ -35,7 +36,7 @@ const PhoneNumberFormatter = ({ userId, hubspotId, featureId }) => {
     setSelectedCountry(selectedOption);
 
     // Update selected country in Firestore
-    await axios.post('http://localhost:4000/api/select-country', {
+    await axios.post(`${baseURL}/api/select-country`, {
       hubspotId,
       countryCode: selectedOption.value,
     });
