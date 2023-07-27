@@ -1,5 +1,4 @@
-﻿// BEGIN: ed8c6549bwf9
-const { pluginExecution } = require('../../controllers/pluginExecution');
+﻿const { pluginExecution } = require('../../controllers/pluginExecution');
 const { getUserIdByPortalId, doesPortalExist } = require('../../firebase/firebaseAdmin');
 const eventToFeatureMap = {
   'contact.creation': ['unknownContactNameCreator', 'nameFormatter'],
@@ -10,28 +9,29 @@ const eventToFeatureMap = {
 exports.webhookEvents = async (req, res) => {
   try {
     res.status(200).end();
-    if (req.body[0]) {
-      const portalId = String(req.body[0].portalId);
+    for (const event of req.body) {
+      const portalId = String(event.portalId);
 
       if (portalId === '21666725' || portalId === '21520785') {
         console.log('Skipping portalId 21666725 or 21520785');
-        return;
+        continue;
       }
 
-      // if changeSource is not CRM_UI skip
-      if (req.body[0].changeSource !== 'CRM_UI') {
-        console.log('Skipping changeSource', req.body[0].changeSource);
-        return;
+      // if changeSource is INTEGRATION skip
+      if (event.changeSource === 'INTEGRATION') {
+        console.log('Skipping changeSource', event.changeSource);
+        continue;
       }
 
       // Check if portalId exists in the database before proceeding
       const isPortalExist = await doesPortalExist(portalId);
       if (!isPortalExist) {
-        return false;
+        continue;
       }
-      console.log('webhooksEvent', req.body);
 
-      const subscriptionType = req.body[0].subscriptionType; // Assuming subscriptionType is at req.body[0].subscriptionType
+      console.log('webhooksEvent', event);
+
+      const subscriptionType = event.subscriptionType; // Assuming subscriptionType is at event.subscriptionType
       const featureIds = eventToFeatureMap[subscriptionType]; // This is now an array of feature IDs
       console.log('portalId', portalId);
 
@@ -54,7 +54,19 @@ exports.webhookEvents = async (req, res) => {
 
         // Iterate over featureIds and execute each one
         for (const featureId of featureIds) {
-          const mockReq = { params: { userId, hubspotId: portalId, featureId }, body: req.body }; // Pass req.body here
+          const propertyName = event.propertyName;
+          if (
+            (featureId === 'unknownContactNameCreator' && propertyName !== 'email') ||
+            (featureId === 'nameFormatter' &&
+              propertyName !== 'lastname' &&
+              propertyName !== 'firstname') ||
+            (featureId === 'phoneNumberFormatter' && propertyName !== 'phone')
+          ) {
+            console.log(`Skipping featureId ${featureId} for propertyName ${propertyName}`);
+            continue;
+          }
+
+          const mockReq = { params: { userId, hubspotId: portalId, featureId }, body: [event] }; // Pass event here
 
           // In the webhookEvents function, before calling pluginExecution
           console.log(
