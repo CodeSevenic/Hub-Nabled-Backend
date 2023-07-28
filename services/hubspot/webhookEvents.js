@@ -1,7 +1,7 @@
 ﻿const { pluginExecution } = require('../../controllers/pluginExecution');
 const { getUserIdByPortalId, doesPortalExist } = require('../../firebase/firebaseAdmin');
 const eventToFeatureMap = {
-  'contact.creation': ['unknownContactNameCreator', 'nameFormatter'],
+  'contact.creation': ['threeCX'],
   'contact.propertyChange': ['nameFormatter', 'phoneNumberFormatter', 'unknownContactNameCreator'],
   // ...
 };
@@ -55,12 +55,21 @@ exports.webhookEvents = async (req, res) => {
         // Iterate over featureIds and execute each one
         for (const featureId of featureIds) {
           const propertyName = event.propertyName;
+          const subscriptionType = event.subscriptionType;
           if (
+            // Check if the featureId is 'unknownContactNameCreator' and the propertyName is not 'email'
+            // OR if the featureId is 'nameFormatter' and the propertyName is not 'lastname' or 'firstname'
+            // OR if the featureId is 'phoneNumberFormatter' and the propertyName is not 'phone'
+            // OR if featureId is 'threeCX' and subscriptionType is not 'contact.creation'
+            // OR if subcriptionType is not 'contact.creation' or 'contact.propertyChange'
             (featureId === 'unknownContactNameCreator' && propertyName !== 'email') ||
             (featureId === 'nameFormatter' &&
               propertyName !== 'lastname' &&
               propertyName !== 'firstname') ||
-            (featureId === 'phoneNumberFormatter' && propertyName !== 'phone')
+            (featureId === 'phoneNumberFormatter' && propertyName !== 'phone') ||
+            (featureId === 'threeCX' && subscriptionType !== 'contact.creation') ||
+            (subscriptionType !== 'contact.creation' &&
+              subscriptionType !== 'contact.propertyChange')
           ) {
             console.log(`Skipping featureId ${featureId} for propertyName ${propertyName}`);
             continue;

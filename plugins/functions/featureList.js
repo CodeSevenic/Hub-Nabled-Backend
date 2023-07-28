@@ -5,6 +5,7 @@ const { dataUploader } = require('../dataUploader');
 const { fetchHubSpotContacts } = require('../fetchContacts');
 const nameFormatter = require('../nameFormatter');
 const phoneNumberFormatter = require('../phoneNumberFormatter');
+const threeCX = require('../threeCX');
 const unknownContactNameCreator = require('../unknownContactNameCreator');
 
 exports.featuresList = {
@@ -28,6 +29,13 @@ exports.featuresList = {
     description:
       'A cutting-edge solution designed to extract and format first and last names from contact emails. With this innovative tool, you can automatically generate accurate contact names by analyzing email addresses.',
     featureId: 'unknownContactNameCreator',
+  },
+  threeCX: {
+    name: '3CX',
+    function: threeCX,
+    description:
+      'Three CX integration to sync contacts from 3CX phone system to HubSpot. This feature listens to 3CX webhooks and syncs new contacts, updates and deletions.',
+    featureId: 'threeCX',
   },
   // createObjectSchema: {
   //   name: 'Object Schema Creator',

@@ -127,7 +127,11 @@ const handleOauthCallback = async (req, res) => {
       const tokens = await exchangeForTokens(userId, authCodeProof, appSecrets);
 
       if (tokens === 'Existing portal') {
-        return res.redirect(`http://localhost:3000/error-existing-portal`);
+        return res.redirect(
+          process.env.NODE_ENV === 'DEV'
+            ? `http://localhost:3000/error-existing-portal`
+            : 'https://seahorse-app-847hs.ondigitalocean.app/error-existing-portal'
+        );
       }
 
       if (tokens.message) {
@@ -137,7 +141,11 @@ const handleOauthCallback = async (req, res) => {
       // Once the tokens have been retrieved, use them to make a query
       // to the HubSpot API
       // redirect to the frontend
-      return res.redirect(`http://localhost:3000/oauth-complete`);
+      return res.redirect(
+        process.env.NODE_ENV === 'DEV'
+          ? `http://localhost:3000/oauth-complete`
+          : 'https://seahorse-app-847hs.ondigitalocean.app/oauth-complete'
+      );
     } else {
       throw new Error('Authorization code not found in request');
     }

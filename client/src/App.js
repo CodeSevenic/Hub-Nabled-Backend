@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { FiSettings } from 'react-icons/fi';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 
@@ -38,7 +38,7 @@ import NoPortalsAdded from './components/NoPortalsAdded';
 import PasswordReset from './pages/Auth/PasswordReset';
 import ErrorExistingPortal from './components/ErrorExistingPortal';
 import DataUploader from './components/Plugins/DataUploader';
-import baseURL from './url';
+import baseURL, { envURL } from './url';
 
 const App = () => {
   const { setCurrentColor, setCurrentMode, currentMode, activeMenu, themeSettings } =
@@ -46,7 +46,8 @@ const App = () => {
   const { authAccountDeleted, hubSpotIds, setIsLoggedIn, handleDeleteAccount } =
     useAuthStateContext();
 
-  console.log('NAME: ', baseURL);
+  console.log('BACK BASE URL: ', baseURL);
+  console.log('FRONT BASE URL: ', envURL);
 
   // useEffect function to handle messages from the OAuth window
   useEffect(() => {
@@ -54,7 +55,11 @@ const App = () => {
       setIsLoggedIn(true);
     }
     const handleMessage = (event) => {
-      const expectedOrigin = process.env.REACT_APP_ENV === 'DEV' ? 'http://localhost:3000' : '/'; // Replace with your expected origin
+      // Replace with your expected origin
+      const expectedOrigin =
+        envURL === 'http://localhost:3000'
+          ? 'http://localhost:3000'
+          : 'https://seahorse-app-847hs.ondigitalocean.app/';
 
       if (event.origin !== expectedOrigin) {
         console.warn('Received message from untrusted origin, ignoring.');

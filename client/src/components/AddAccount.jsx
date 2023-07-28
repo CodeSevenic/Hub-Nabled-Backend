@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStateContext } from '../contexts/AuthContext';
 import { BiSolidLock } from 'react-icons/bi';
 import UpGradePopup from './Popup/upgradePopup';
-import baseURL from '../url';
+import baseURL, { envURL } from '../url';
 
 const AddAccount = () => {
   const [apps, setApps] = useState([]);
@@ -14,6 +14,8 @@ const AddAccount = () => {
   const [paid, setPaid] = useState(false);
   const { authAccountDeleted, hubSpotIds, handleDeleteAccount, setIsLoggedIn } =
     useAuthStateContext();
+
+  let appNumber = envURL === 'http://localhost:3000' ? 1 : 0;
 
   const navigate = useNavigate();
   // Fetch apps from backend
@@ -58,7 +60,12 @@ const AddAccount = () => {
 
         // Send a message to the OAuth window to close itself
         if (window.oauthWindow) {
-          window.oauthWindow.postMessage({ command: 'close' }, 'http://localhost:3000'); // target origin
+          window.oauthWindow.postMessage(
+            { command: 'close' },
+            envURL === 'http://localhost:3000'
+              ? 'http://localhost:3000'
+              : 'https://seahorse-app-847hs.ondigitalocean.app/'
+          ); // target origin
         }
         setAuthPopup(true);
         // check sessionStorage for isLoggedIn value and convert to boolean
@@ -85,7 +92,9 @@ const AddAccount = () => {
       <UpGradePopup isOpen={popup} onRequestClose={closePopup} />
       <button
         className="text-white font-semibold text-sm w-fit m-3 flex gap-2 items-center mt-8 mb-5 bg-btn1 px-5 py-2 rounded-xl ml-2  hover:shadow-lg transition-all duration-300"
-        onClick={() => (!paid && hubSpotIds.length > 0 ? upgradePopup() : installApp(apps[0]))}
+        onClick={() =>
+          !paid && hubSpotIds.length > 0 ? upgradePopup() : installApp(apps[appNumber])
+        }
       >
         <span>Connect HubSpot Account</span>
         {!paid && hubSpotIds.length > 0 && (
