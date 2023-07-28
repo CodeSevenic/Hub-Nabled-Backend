@@ -15,4 +15,4 @@ const config = {
   NODE_ENV: process.env.NODE_ENV || 'PROD',
 };
 
-// module.exports = config;
+module.exports = config;
